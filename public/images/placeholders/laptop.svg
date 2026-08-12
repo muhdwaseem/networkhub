@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#155e75"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg2)"/>
+  <rect x="280" y="190" width="240" height="150" rx="10" fill="#0b1220" stroke="#67e8f9" stroke-width="3"/>
+  <rect x="292" y="202" width="216" height="126" rx="4" fill="#164e63"/>
+  <path d="M255 350 h290 l18 34 a10 10 0 0 1 -9 15 h-308 a10 10 0 0 1 -9 -15 z" fill="#0b1220" stroke="#67e8f9" stroke-width="3"/>
+  <rect x="360" y="358" width="80" height="8" rx="4" fill="#67e8f9"/>
+  <text x="400" y="480" font-family="Arial, sans-serif" font-size="26" fill="#e2e8f0" text-anchor="middle" font-weight="600">Laptops &amp; Computers</text>
+</svg>

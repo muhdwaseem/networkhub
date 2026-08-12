@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 56" width="280" height="56">
+  <rect x="2" y="8" width="40" height="40" rx="10" fill="#2563eb"/>
+  <path d="M14 34 L22 18 L26 18 L20 30 L30 30 L18 44 Z" fill="#ffffff"/>
+  <text x="52" y="32" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#0f172a">Network<tspan fill="#2563eb"> Hub</tspan></text>
+  <text x="52" y="47" font-family="Arial, Helvetica, sans-serif" font-size="10" letter-spacing="1.5" fill="#64748b">IT &amp; SECURITY EQUIPMENT</text>
+</svg>

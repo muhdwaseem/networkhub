@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About | YourTech Trading LLC</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="logo"><img data-site="logo-src" src="assets/img/placeholder-logo.svg" alt="Logo"></a>
+    <nav>
+      <ul class="nav-menu" id="nav-menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="products.html">Products</a></li>
+        <li><a href="about.html" class="active">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a class="nav-cta" data-site="whatsapp-href" href="#" target="_blank" rel="noopener">WhatsApp Us</a></li>
+      </ul>
+    </nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu">&#9776;</button>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container" style="max-width:760px;">
+    <div class="section-head" style="text-align:left;margin-bottom:24px;">
+      <h2>About <span data-site="businessName">YourTech Trading LLC</span></h2>
+    </div>
+    <p>Placeholder company description — replace with the client's real story: how long they've operated,
+       what makes their sourcing/pricing/service different, and which industries or customers they serve
+       (e.g. retailers, offices, system integrators, government tenders).</p>
+    <p>Suggested sections to fill in later: Company history, Brands/partners carried, Certifications,
+       Warehouse/showroom location with map, Team or leadership note.</p>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h5 data-site="businessName">YourTech Trading LLC</h5>
+        <p data-site="address" style="max-width:280px;font-size:14px;">Dubai, United Arab Emirates</p>
+      </div>
+      <div>
+        <h5>Quick Links</h5>
+        <a href="products.html">Products</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div>
+        <h5>Contact</h5>
+        <a data-site="mail-href" href="#">Email Us</a>
+        <a data-site="whatsapp-href" href="#" target="_blank" rel="noopener">WhatsApp</a>
+        <span data-site="phoneDisplay" style="display:block;font-size:14px;">+971 50 000 0000</span>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; <span id="year"></span> <span data-site="businessName">YourTech Trading LLC</span>. All rights reserved.</div>
+  </div>
+</footer>
+
+<a class="wa-float" data-site="whatsapp-href" href="#" target="_blank" rel="noopener" aria-label="WhatsApp">&#9990;</a>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/products.js"></script>
+<script src="assets/js/main.js"></script>
+<script>document.getElementById('year').textContent = SITE_CONFIG.year;</script>
+</body>
+</html>

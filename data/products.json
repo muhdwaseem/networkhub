@@ -1,0 +1,233 @@
+[
+  {
+    "id": "p-8f1e2a-01",
+    "name": "24-Port Gigabit Managed Switch",
+    "category": "Networking",
+    "brand": "Sample Brand",
+    "sku": "NW-SW24-GBE",
+    "price": "",
+    "inStock": true,
+    "featured": true,
+    "specs": [
+      "24x RJ45 Gigabit ports + 4x SFP uplinks",
+      "VLAN, QoS and port mirroring support",
+      "Rack-mountable 19\" 1U metal chassis"
+    ],
+    "description": "A managed gigabit switch built for growing office networks, offering VLAN segmentation, QoS traffic prioritisation and SFP uplinks for fibre backbones.",
+    "images": [
+      "/images/placeholders/networking.svg"
+    ],
+    "createdAt": "2026-01-05T09:00:00.000Z",
+    "updatedAt": "2026-01-05T09:00:00.000Z"
+  },
+  {
+    "id": "p-8f1e2a-02",
+    "name": "8-Port Gigabit Network Hub",
+    "category": "Networking",
+    "brand": "Sample Brand",
+    "sku": "NW-HUB08",
+    "price": "",
+    "inStock": true,
+    "featured": true,
+    "specs": [
+      "8x RJ45 Gigabit ports, plug & play",
+      "Desktop or wall-mount installation",
+      "Compact metal enclosure"
+    ],
+    "description": "A no-configuration gigabit hub ideal for extending a small office or retail network without any setup.",
+    "images": [
+      "/images/placeholders/networking.svg"
+    ],
+    "createdAt": "2026-01-05T09:05:00.000Z",
+    "updatedAt": "2026-01-05T09:05:00.000Z"
+  },
+  {
+    "id": "p-8f1e2a-03",
+    "name": "AC1900 Dual-Band Wireless Router",
+    "category": "Networking",
+    "brand": "Sample Brand",
+    "sku": "NW-RT1900",
+    "price": "",
+    "inStock": true,
+    "featured": false,
+    "specs": [
+      "Dual-band 2.4GHz / 5GHz, up to 1900Mbps",
+      "4x Gigabit LAN, 1x Gigabit WAN",
+      "Guest network & parental controls"
+    ],
+    "description": "High-throughput wireless router suited for small offices and dense home networks needing reliable dual-band coverage.",
+    "images": [
+      "/images/placeholders/networking.svg"
+    ],
+    "createdAt": "2026-01-06T09:00:00.000Z",
+    "updatedAt": "2026-01-06T09:00:00.000Z"
+  },
+  {
+    "id": "p-8f1e2a-04",
+    "name": "Business Laptop 14\" i5",
+    "category": "Laptops & Computers",
+    "brand": "Sample Brand",
+    "sku": "LT-14-I5",
+    "price": "",
+    "inStock": true,
+    "featured": true,
+    "specs": [
+      "Intel Core i5, 8GB RAM, 256GB SSD",
+      "14\" Full HD anti-glare display",
+      "Backlit keyboard, fingerprint reader"
+    ],
+    "description": "A reliable everyday business laptop with fast boot times and enough power for office work, browsing and video calls.",
+    "images": [
+      "/images/placeholders/laptop.svg"
+    ],
+    "createdAt": "2026-01-07T09:00:00.000Z",
+    "updatedAt": "2026-01-07T09:00:00.000Z"
+  },
+  {
+    "id": "p-8f1e2a-05",
+    "name": "Business Laptop 15\" i7",
+    "category": "Laptops & Computers",
+    "brand": "Sample Brand",
+    "sku": "LT-15-I7",
+    "price": "",
+    "inStock": true,
+    "featured": false,
+    "specs": [
+      "Intel Core i7, 16GB RAM, 512GB SSD",
+      "15.6\" Full HD IPS display",
+      "Dedicated graphics for light design work"
+    ],
+    "description": "A higher-spec laptop for power users, multitasking professionals and light creative workloads.",
+    "images": [
+      "/images/placeholders/laptop.svg"
+    ],
+    "createdAt": "2026-01-07T09:10:00.000Z",
+    "updatedAt": "2026-01-07T09:10:00.000Z"
+  },
+  {
+    "id": "p-8f1e2a-06",
+    "name": "Mini Desktop PC",
+    "category": "Laptops & Computers",
+    "brand": "Sample Brand",
+    "sku": "PC-MINI-01",
+    "price": "",
+    "inStock": false,
+    "featured": false,
+    "specs": [
+      "Intel Core i3, 8GB RAM, 256GB SSD",
+      "Compact form factor, VESA mountable",
+      "HDMI + DisplayPort dual monitor output"
+    ],
+    "description": "Space-saving desktop PC for reception desks, POS counters and back-office workstations.",
+    "images": [
+      "/images/placeholders/laptop.svg"
+    ],
+    "createdAt": "2026-01-08T09:00:00.000Z",
+    "updatedAt": "2026-01-08T09:00:00.000Z"
+  },
+  {
+    "id": "p-8f1e2a-07",
+    "name": "4-Channel CCTV Camera Kit",
+    "category": "Surveillance & Security",
+    "brand": "Sample Brand",
+    "sku": "SV-CCTV4",
+    "price": "",
+    "inStock": true,
+    "featured": true,
+    "specs": [
+      "4x HD 1080p weatherproof cameras",
+      "4-channel DVR with 1TB storage included",
+      "Night vision up to 20m, mobile app viewing"
+    ],
+    "description": "A complete entry-level surveillance kit for shops, warehouses and small offices — cameras, recorder and storage in one box.",
+    "images": [
+      "/images/placeholders/cctv.svg"
+    ],
+    "createdAt": "2026-01-09T09:00:00.000Z",
+    "updatedAt": "2026-01-09T09:00:00.000Z"
+  },
+  {
+    "id": "p-8f1e2a-08",
+    "name": "8-Channel NVR with PoE",
+    "category": "Surveillance & Security",
+    "brand": "Sample Brand",
+    "sku": "SV-NVR8-POE",
+    "price": "",
+    "inStock": true,
+    "featured": false,
+    "specs": [
+      "8-channel network video recorder",
+      "Built-in 8-port PoE switch for cameras",
+      "Supports up to 8MP IP cameras"
+    ],
+    "description": "A PoE-enabled NVR that powers and records up to 8 IP cameras over a single cable run each — simplifies installation for larger sites.",
+    "images": [
+      "/images/placeholders/cctv.svg"
+    ],
+    "createdAt": "2026-01-09T09:15:00.000Z",
+    "updatedAt": "2026-01-09T09:15:00.000Z"
+  },
+  {
+    "id": "p-8f1e2a-09",
+    "name": "Biometric Access Control Terminal",
+    "category": "Surveillance & Security",
+    "brand": "Sample Brand",
+    "sku": "SV-ACC-BIO",
+    "price": "",
+    "inStock": true,
+    "featured": false,
+    "specs": [
+      "Fingerprint + RFID card access",
+      "Stores up to 3,000 users / 100,000 logs",
+      "Time & attendance reporting built-in"
+    ],
+    "description": "Door access and time-attendance terminal suited for offices and staff entrances that need controlled access.",
+    "images": [
+      "/images/placeholders/cctv.svg"
+    ],
+    "createdAt": "2026-01-10T09:00:00.000Z",
+    "updatedAt": "2026-01-10T09:00:00.000Z"
+  },
+  {
+    "id": "p-8f1e2a-10",
+    "name": "Cat6 Patch Cable Pack (10x 2m)",
+    "category": "Accessories",
+    "brand": "Sample Brand",
+    "sku": "AC-CAT6-10",
+    "price": "",
+    "inStock": true,
+    "featured": false,
+    "specs": [
+      "10x 2-metre Cat6 UTP patch cables",
+      "Snagless RJ45 connectors",
+      "Colour-coded for easy cable management"
+    ],
+    "description": "A bulk pack of Cat6 patch cables for structured cabling installations and rack cleanups.",
+    "images": [
+      "/images/placeholders/accessory.svg"
+    ],
+    "createdAt": "2026-01-11T09:00:00.000Z",
+    "updatedAt": "2026-01-11T09:00:00.000Z"
+  },
+  {
+    "id": "p-8f1e2a-11",
+    "name": "Rackmount PDU with Surge Protection",
+    "category": "Accessories",
+    "brand": "Sample Brand",
+    "sku": "AC-PDU-8W",
+    "price": "",
+    "inStock": true,
+    "featured": false,
+    "specs": [
+      "8-way rackmount power distribution unit",
+      "Built-in surge protection",
+      "19\" 1U form factor"
+    ],
+    "description": "Keep server and network racks tidy and protected with this surge-protected power distribution unit.",
+    "images": [
+      "/images/placeholders/accessory.svg"
+    ],
+    "createdAt": "2026-01-11T09:10:00.000Z",
+    "updatedAt": "2026-01-11T09:10:00.000Z"
+  }
+]

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact | YourTech Trading LLC</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="logo"><img data-site="logo-src" src="assets/img/placeholder-logo.svg" alt="Logo"></a>
+    <nav>
+      <ul class="nav-menu" id="nav-menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="products.html">Products</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html" class="active">Contact</a></li>
+        <li><a class="nav-cta" data-site="whatsapp-href" href="#" target="_blank" rel="noopener">WhatsApp Us</a></li>
+      </ul>
+    </nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu">&#9776;</button>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2>Get in Touch</h2>
+      <p>Fastest response is via WhatsApp. Email works too for detailed enquiries or quotation requests.</p>
+    </div>
+    <div class="contact-grid">
+      <div>
+        <div class="contact-card">
+          <h4>WhatsApp</h4>
+          <p style="margin-bottom:12px;">Tap to start a chat — pre-filled with a general enquiry.</p>
+          <a class="btn btn-whatsapp" style="flex:none;" data-site="whatsapp-href" href="#" target="_blank" rel="noopener">Chat on WhatsApp</a>
+        </div>
+        <div class="contact-card">
+          <h4>Email</h4>
+          <p data-site="email" style="margin-bottom:12px;">info@example.com</p>
+          <a class="btn btn-outline" data-site="mail-href" href="#">Send Email</a>
+        </div>
+        <div class="contact-card">
+          <h4>Phone / Address</h4>
+          <p data-site="phoneDisplay">+971 50 000 0000</p>
+          <p data-site="address">Dubai, United Arab Emirates</p>
+        </div>
+      </div>
+      <div class="contact-card" style="height:fit-content;">
+        <h4>Map</h4>
+        <p style="margin-bottom:12px;">Embed a Google Maps location once the client confirms their address/showroom.</p>
+        <div style="background:#eef1f5;border-radius:8px;height:220px;display:flex;align-items:center;justify-content:center;color:#8a94a3;font-size:14px;">
+          [ Google Map embed placeholder ]
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h5 data-site="businessName">YourTech Trading LLC</h5>
+        <p data-site="address" style="max-width:280px;font-size:14px;">Dubai, United Arab Emirates</p>
+      </div>
+      <div>
+        <h5>Quick Links</h5>
+        <a href="products.html">Products</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div>
+        <h5>Contact</h5>
+        <a data-site="mail-href" href="#">Email Us</a>
+        <a data-site="whatsapp-href" href="#" target="_blank" rel="noopener">WhatsApp</a>
+        <span data-site="phoneDisplay" style="display:block;font-size:14px;">+971 50 000 0000</span>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; <span id="year"></span> <span data-site="businessName">YourTech Trading LLC</span>. All rights reserved.</div>
+  </div>
+</footer>
+
+<a class="wa-float" data-site="whatsapp-href" href="#" target="_blank" rel="noopener" aria-label="WhatsApp">&#9990;</a>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/products.js"></script>
+<script src="assets/js/main.js"></script>
+<script>document.getElementById('year').textContent = SITE_CONFIG.year;</script>
+</body>
+</html>

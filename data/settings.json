@@ -1,0 +1,17 @@
+{
+  "businessName": "Network Hub",
+  "tagline": "Networking, IT & Security Equipment Supplier",
+  "description": "Network Hub supplies genuine networking, IT and security equipment to businesses across the UAE, with fast WhatsApp and email response and pricing for single units or bulk orders.",
+  "whatsappNumber": "971500000000",
+  "email": "sales@networkhub-example.com",
+  "phoneDisplay": "+971 50 000 0000",
+  "address": "Warehouse 12, Al Quoz Industrial Area 3, Dubai, United Arab Emirates",
+  "logo": "/images/logo.svg",
+  "heroImage": "",
+  "socials": {
+    "facebook": "",
+    "instagram": "",
+    "linkedin": ""
+  },
+  "businessHours": "Sun - Thu: 9:00 AM - 6:00 PM"
+}

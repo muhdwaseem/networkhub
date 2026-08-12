@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <defs>
+    <linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#1e3a8a"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg1)"/>
+  <g stroke="#60a5fa" stroke-width="3" fill="none" opacity="0.55">
+    <circle cx="400" cy="270" r="120"/>
+    <circle cx="400" cy="270" r="80"/>
+  </g>
+  <g fill="#93c5fd">
+    <circle cx="400" cy="150" r="10"/>
+    <circle cx="290" cy="330" r="10"/>
+    <circle cx="510" cy="330" r="10"/>
+    <circle cx="400" cy="270" r="14" fill="#eff6ff"/>
+  </g>
+  <g stroke="#93c5fd" stroke-width="2.5">
+    <line x1="400" y1="160" x2="400" y2="260"/>
+    <line x1="298" y1="323" x2="392" y2="278"/>
+    <line x1="502" y1="323" x2="408" y2="278"/>
+  </g>
+  <rect x="300" y="420" width="200" height="14" rx="7" fill="#334155"/>
+  <text x="400" y="480" font-family="Arial, sans-serif" font-size="26" fill="#e2e8f0" text-anchor="middle" font-weight="600">Networking Equipment</text>
+</svg>
