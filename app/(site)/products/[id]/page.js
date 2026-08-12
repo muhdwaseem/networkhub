@@ -103,7 +103,7 @@ export default async function ProductDetailPage({ params }) {
       {related.length > 0 && (
         <div className="mt-16 border-t border-slate-200 pt-10">
           <h2 className="text-xl font-bold text-ink-900">More in {product.category}</h2>
-          <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {related.map((p) => (
               <ProductCard key={p.id} product={p} settings={settings} />
             ))}
