@@ -16,7 +16,7 @@ export async function register() {
   const seedDir = path.join(process.cwd(), "data");
 
   for (const file of ["products.json", "categories.json", "settings.json"]) {
-    const dest = path.join(dataDir, file);
+    const dest = path.join(/* turbopackIgnore: true */ dataDir, file);
     try {
       await fs.access(dest);
       continue; // already seeded
