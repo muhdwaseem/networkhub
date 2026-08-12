@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# Claude Code worktrees (used for isolating background-session edits)
+/.claude/
+
 # admin-uploaded product/site images (runtime content, not source)
 /public/uploads/**
 !/public/uploads/.gitkeep
