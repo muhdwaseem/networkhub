@@ -15,7 +15,7 @@ export async function register() {
   await fs.mkdir(dataDir, { recursive: true });
   const seedDir = path.join(process.cwd(), "data");
 
-  for (const file of ["products.json", "categories.json", "settings.json"]) {
+  for (const file of ["products.json", "categories.json", "brands.json", "settings.json"]) {
     const dest = path.join(/* turbopackIgnore: true */ dataDir, file);
     try {
       await fs.access(dest);
