@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getProducts, getCategories, getSettings } from "@/lib/db";
+import { getProducts, getCategories, getBrands, getSettings } from "@/lib/db";
 import ProductsExplorer from "@/components/site/ProductsExplorer";
 
 export const metadata = {
@@ -8,9 +8,10 @@ export const metadata = {
 };
 
 export default async function ProductsPage() {
-  const [products, categories, settings] = await Promise.all([
+  const [products, categories, brands, settings] = await Promise.all([
     getProducts(),
     getCategories(),
+    getBrands(),
     getSettings(),
   ]);
 
@@ -28,7 +29,7 @@ export default async function ProductsPage() {
 
       <div className="mt-8">
         <Suspense fallback={<div className="h-10" />}>
-          <ProductsExplorer products={products} categories={categories} settings={settings} />
+          <ProductsExplorer products={products} categories={categories} brands={brands} settings={settings} />
         </Suspense>
       </div>
     </div>

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "b-a205d1c1-ed59-4279-ac44-f3536e01225a",
+    "name": "Sample Networking Co.",
+    "type": "active",
+    "logo": "",
+    "createdAt": "2026-01-05T09:00:00.000Z",
+    "updatedAt": "2026-08-13T18:37:11.695Z"
+  },
+  {
+    "id": "b-3f5d011f-ea98-4536-b229-d100c02d3fd3",
+    "name": "Sample Computing Co.",
+    "type": "active",
+    "logo": "",
+    "createdAt": "2026-01-05T09:00:00.000Z",
+    "updatedAt": "2026-01-05T09:00:00.000Z"
+  },
+  {
+    "id": "b-a782297b-f5fc-42c7-a0a2-8738a5863e2a",
+    "name": "Sample Security Systems",
+    "type": "active",
+    "logo": "",
+    "createdAt": "2026-01-05T09:00:00.000Z",
+    "updatedAt": "2026-01-05T09:00:00.000Z"
+  },
+  {
+    "id": "b-367d597b-e005-4f79-a03f-a388954f61dd",
+    "name": "Sample Accessories Co.",
+    "type": "active",
+    "logo": "",
+    "createdAt": "2026-01-05T09:00:00.000Z",
+    "updatedAt": "2026-01-05T09:00:00.000Z"
+  },
+  {
+    "id": "b-044e0e60-c738-4bbd-bc63-4149f70d95de",
+    "name": "Sample Cabling Co.",
+    "type": "passive",
+    "logo": "",
+    "createdAt": "2026-01-05T09:00:00.000Z",
+    "updatedAt": "2026-01-05T09:00:00.000Z"
+  },
+  {
+    "id": "b-8e967713-43fb-4edc-b0cf-a946960ba4d7",
+    "name": "Sample Connectivity Co.",
+    "type": "passive",
+    "logo": "",
+    "createdAt": "2026-01-05T09:00:00.000Z",
+    "updatedAt": "2026-01-05T09:00:00.000Z"
+  }
+]

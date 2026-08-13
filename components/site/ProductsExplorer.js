@@ -4,13 +4,14 @@ import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ProductCard from "./ProductCard";
 
-export default function ProductsExplorer({ products, categories, settings }) {
+export default function ProductsExplorer({ products, categories, brands, settings }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  // The URL is the source of truth for the selected category, so it's
-  // derived directly from searchParams each render instead of duplicated
-  // into its own state (which would need an effect to stay in sync).
+  // The URL is the source of truth for the selected category/brand, so
+  // they're derived directly from searchParams each render instead of
+  // duplicated into their own state (which would need an effect to stay in sync).
   const category = searchParams.get("category") || "All";
+  const brand = searchParams.get("brand") || "All";
   const [query, setQuery] = useState("");
 
   function selectCategory(cat) {
@@ -20,18 +21,27 @@ export default function ProductsExplorer({ products, categories, settings }) {
     router.replace(`/products${params.toString() ? `?${params.toString()}` : ""}`, { scroll: false });
   }
 
+  function selectBrand(b) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (b === "All") params.delete("brand");
+    else params.set("brand", b);
+    router.replace(`/products${params.toString() ? `?${params.toString()}` : ""}`, { scroll: false });
+  }
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return products.filter((p) => {
       const matchesCategory = category === "All" || p.category === category;
+      const matchesBrand = brand === "All" || p.brand === brand;
       const matchesQuery =
         !q ||
         [p.name, p.brand, p.category, p.sku, p.description].join(" ").toLowerCase().includes(q);
-      return matchesCategory && matchesQuery;
+      return matchesCategory && matchesBrand && matchesQuery;
     });
-  }, [products, category, query]);
+  }, [products, category, brand, query]);
 
   const chips = ["All", ...categories];
+  const brandOptions = ["All", ...brands.map((b) => b.name)];
 
   return (
     <div>
@@ -52,15 +62,27 @@ export default function ProductsExplorer({ products, categories, settings }) {
             </button>
           ))}
         </div>
-        <div className="w-full sm:w-64">
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search products..."
-            className="input"
-            aria-label="Search products"
-          />
+        <div className="flex gap-2">
+          <select
+            className="input sm:w-56"
+            value={brand}
+            onChange={(e) => selectBrand(e.target.value)}
+            aria-label="Filter by brand"
+          >
+            {brandOptions.map((b) => (
+              <option key={b} value={b}>{b === "All" ? "All brands" : b}</option>
+            ))}
+          </select>
+          <div className="w-full sm:w-64">
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search products..."
+              className="input"
+              aria-label="Search products"
+            />
+          </div>
         </div>
       </div>
 

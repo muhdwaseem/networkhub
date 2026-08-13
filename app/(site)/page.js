@@ -1,8 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getProducts, getCategories, getSettings } from "@/lib/db";
+import { getProducts, getCategories, getBrands, getSettings } from "@/lib/db";
 import { waLink } from "@/lib/enquiry";
 import ProductCard from "@/components/site/ProductCard";
+import BrandsSection from "@/components/site/BrandsSection";
 
 const CATEGORY_IMAGES = {
   Networking: "/images/placeholders/networking.svg",
@@ -12,13 +13,16 @@ const CATEGORY_IMAGES = {
 };
 
 export default async function HomePage() {
-  const [products, categories, settings] = await Promise.all([
+  const [products, categories, brands, settings] = await Promise.all([
     getProducts(),
     getCategories(),
+    getBrands(),
     getSettings(),
   ]);
 
   const featured = (products.filter((p) => p.featured).length ? products.filter((p) => p.featured) : products).slice(0, 8);
+  const activeBrands = brands.filter((b) => b.type === "active");
+  const passiveBrands = brands.filter((b) => b.type === "passive");
 
   return (
     <div>
@@ -107,6 +111,28 @@ export default async function HomePage() {
           })}
         </div>
       </section>
+
+      {/* Active Brands */}
+      {activeBrands.length > 0 && (
+        <div className="border-t border-slate-200 bg-slate-50">
+          <BrandsSection
+            title="Active Brands"
+            subtitle="Powered networking, computing and security equipment."
+            brands={activeBrands}
+            products={products}
+          />
+        </div>
+      )}
+
+      {/* Passive Brands */}
+      {passiveBrands.length > 0 && (
+        <BrandsSection
+          title="Passive Brands"
+          subtitle="Structured cabling and infrastructure essentials."
+          brands={passiveBrands}
+          products={products}
+        />
+      )}
 
       {/* Featured products */}
       <section className="border-t border-slate-200 bg-slate-50 py-14 sm:py-20">

@@ -54,7 +54,11 @@ export default async function ProductDetailPage({ params }) {
           </h1>
 
           <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-slate-500">
-            {product.brand && <span>Brand: {product.brand}</span>}
+            {product.brand && (
+              <Link href={`/products?brand=${encodeURIComponent(product.brand)}`} className="hover:text-brand-700">
+                Brand: {product.brand}
+              </Link>
+            )}
             {product.sku && <span>SKU: {product.sku}</span>}
             <span className={product.inStock ? "text-emerald-600" : "text-red-600"}>
               {product.inStock ? "In stock" : "Out of stock"}

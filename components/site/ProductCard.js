@@ -25,7 +25,10 @@ export default function ProductCard({ product, settings }) {
       </Link>
 
       <div className="flex flex-1 flex-col p-4">
-        <span className="badge w-fit">{product.category}</span>
+        <div className="flex items-center gap-2">
+          <span className="badge w-fit">{product.category}</span>
+          {product.brand && <span className="text-xs text-slate-500">{product.brand}</span>}
+        </div>
         <Link href={href} className="mt-2">
           <h3 className="line-clamp-2 text-sm font-semibold text-ink-900 hover:text-brand-700">
             {product.name}

@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 const NEW_CATEGORY_VALUE = "__new__";
+const NEW_BRAND_VALUE = "__new__";
 
-export default function ProductForm({ mode, product, categories }) {
+export default function ProductForm({ mode, product, categories, brands }) {
   const router = useRouter();
   const fileInputRef = useRef(null);
 
@@ -23,6 +24,8 @@ export default function ProductForm({ mode, product, categories }) {
   });
   const [newCategory, setNewCategory] = useState("");
   const [usingNewCategory, setUsingNewCategory] = useState(categories.length === 0);
+  const [newBrand, setNewBrand] = useState({ name: "", type: "active" });
+  const [usingNewBrand, setUsingNewBrand] = useState(false);
 
   const [existingImages, setExistingImages] = useState(
     (product?.images || []).map((url) => ({ url, keep: true }))
@@ -51,6 +54,16 @@ export default function ProductForm({ mode, product, categories }) {
     } else {
       setUsingNewCategory(false);
       setFields((f) => ({ ...f, category: value }));
+    }
+  }
+
+  function handleBrandChange(e) {
+    const value = e.target.value;
+    if (value === NEW_BRAND_VALUE) {
+      setUsingNewBrand(true);
+    } else {
+      setUsingNewBrand(false);
+      setFields((f) => ({ ...f, brand: value }));
     }
   }
 
@@ -87,6 +100,15 @@ export default function ProductForm({ mode, product, categories }) {
       }
       category = trimmed;
     }
+    let brand = fields.brand;
+    if (usingNewBrand) {
+      const trimmed = newBrand.name.trim();
+      if (!trimmed) {
+        setError("Enter a name for the new brand.");
+        return;
+      }
+      brand = trimmed;
+    }
     if (!fields.name.trim()) {
       setError("Product name is required.");
       return;
@@ -106,10 +128,21 @@ export default function ProductForm({ mode, product, categories }) {
         }
       }
 
+      if (usingNewBrand) {
+        const bf = new FormData();
+        bf.set("name", brand);
+        bf.set("type", newBrand.type);
+        const res = await fetch("/api/admin/brands", { method: "POST", body: bf });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || "Failed to create brand.");
+        }
+      }
+
       const formData = new FormData();
       formData.set("name", fields.name.trim());
       formData.set("category", category);
-      formData.set("brand", fields.brand);
+      formData.set("brand", brand);
       formData.set("sku", fields.sku);
       formData.set("price", fields.price);
       formData.set("description", fields.description);
@@ -181,7 +214,43 @@ export default function ProductForm({ mode, product, categories }) {
           </div>
           <div>
             <label className="label" htmlFor="brand">Brand</label>
-            <input id="brand" className="input" value={fields.brand} onChange={update("brand")} />
+            <select
+              id="brand"
+              className="input"
+              value={usingNewBrand ? NEW_BRAND_VALUE : fields.brand}
+              onChange={handleBrandChange}
+            >
+              <option value="">No brand</option>
+              <optgroup label="Active Brands">
+                {brands.filter((b) => b.type === "active").map((b) => (
+                  <option key={b.id} value={b.name}>{b.name}</option>
+                ))}
+              </optgroup>
+              <optgroup label="Passive Brands">
+                {brands.filter((b) => b.type === "passive").map((b) => (
+                  <option key={b.id} value={b.name}>{b.name}</option>
+                ))}
+              </optgroup>
+              <option value={NEW_BRAND_VALUE}>+ Add new brand...</option>
+            </select>
+            {usingNewBrand && (
+              <div className="mt-2 flex gap-2">
+                <input
+                  className="input"
+                  placeholder="New brand name"
+                  value={newBrand.name}
+                  onChange={(e) => setNewBrand((b) => ({ ...b, name: e.target.value }))}
+                />
+                <select
+                  className="input w-36 shrink-0"
+                  value={newBrand.type}
+                  onChange={(e) => setNewBrand((b) => ({ ...b, type: e.target.value }))}
+                >
+                  <option value="active">Active</option>
+                  <option value="passive">Passive</option>
+                </select>
+              </div>
+            )}
           </div>
         </div>
 
