@@ -23,6 +23,7 @@ export default async function HomePage() {
   const featured = (products.filter((p) => p.featured).length ? products.filter((p) => p.featured) : products).slice(0, 8);
   const activeBrands = brands.filter((b) => b.type === "active");
   const passiveBrands = brands.filter((b) => b.type === "passive");
+  const otherProducts = products.filter((p) => !p.brand).slice(0, 4);
 
   return (
     <div>
@@ -132,6 +133,31 @@ export default async function HomePage() {
           brands={passiveBrands}
           products={products}
         />
+      )}
+
+      {/* Products without a brand assigned yet */}
+      {otherProducts.length > 0 && (
+        <div className="border-t border-slate-200">
+          <section className="container-page py-14 sm:py-20">
+            <div className="flex items-end justify-between">
+              <div>
+                <h2 className="text-2xl font-bold tracking-tight text-ink-900 sm:text-3xl">
+                  Other Products
+                </h2>
+                <p className="mt-2 text-slate-600">Everything else in the catalog.</p>
+              </div>
+              <Link href="/products" className="hidden text-sm font-semibold text-brand-700 hover:text-brand-600 sm:block">
+                View all &rarr;
+              </Link>
+            </div>
+
+            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {otherProducts.map((p) => (
+                <ProductCard key={p.id} product={p} settings={settings} />
+              ))}
+            </div>
+          </section>
+        </div>
       )}
 
       {/* Featured products */}

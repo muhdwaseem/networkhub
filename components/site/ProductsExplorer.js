@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ProductCard from "./ProductCard";
 
+const UNBRANDED_VALUE = "__unbranded__";
+
 export default function ProductsExplorer({ products, categories, brands, settings }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -32,7 +34,9 @@ export default function ProductsExplorer({ products, categories, brands, setting
     const q = query.trim().toLowerCase();
     return products.filter((p) => {
       const matchesCategory = category === "All" || p.category === category;
-      const matchesBrand = brand === "All" || p.brand === brand;
+      const matchesBrand =
+        brand === "All" ||
+        (brand === UNBRANDED_VALUE ? !p.brand : p.brand === brand);
       const matchesQuery =
         !q ||
         [p.name, p.brand, p.category, p.sku, p.description].join(" ").toLowerCase().includes(q);
@@ -41,7 +45,17 @@ export default function ProductsExplorer({ products, categories, brands, setting
   }, [products, category, brand, query]);
 
   const chips = ["All", ...categories];
-  const brandOptions = ["All", ...brands.map((b) => b.name)];
+  const hasUnbranded = products.some((p) => !p.brand);
+  const brandOptions = [
+    "All",
+    ...brands.map((b) => b.name),
+    ...(hasUnbranded ? [UNBRANDED_VALUE] : []),
+  ];
+  const brandLabel = (b) => {
+    if (b === "All") return "All brands";
+    if (b === UNBRANDED_VALUE) return "Other Products";
+    return b;
+  };
 
   return (
     <div>
@@ -70,7 +84,7 @@ export default function ProductsExplorer({ products, categories, brands, setting
             aria-label="Filter by brand"
           >
             {brandOptions.map((b) => (
-              <option key={b} value={b}>{b === "All" ? "All brands" : b}</option>
+              <option key={b} value={b}>{brandLabel(b)}</option>
             ))}
           </select>
           <div className="w-full sm:w-64">
