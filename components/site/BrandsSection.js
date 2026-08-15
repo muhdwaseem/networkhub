@@ -7,8 +7,8 @@ export default function BrandsSection({ title, subtitle, brands, products }) {
     <div className="container-page py-14 sm:py-20">
       <div className="flex items-end justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-ink-900 sm:text-3xl">{title}</h2>
-          <p className="mt-2 text-slate-600">{subtitle}</p>
+          <div className="eyebrow">{title}</div>
+          <h2 className="text-2xl font-bold tracking-tight text-ink-900 sm:text-3xl">{subtitle}</h2>
         </div>
       </div>
 
