@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProductById, getProducts, getSettings } from "@/lib/db";
+import { withResolvedProductImage, withResolvedProductImages } from "@/lib/images";
 import { waLink } from "@/lib/enquiry";
 import ProductGallery from "@/components/site/ProductGallery";
 import ProductCard from "@/components/site/ProductCard";
@@ -18,17 +19,18 @@ export async function generateMetadata({ params }) {
 
 export default async function ProductDetailPage({ params }) {
   const { id } = await params;
-  const [product, settings, allProducts] = await Promise.all([
+  const [rawProduct, settings, allProducts] = await Promise.all([
     getProductById(id),
     getSettings(),
     getProducts(),
   ]);
 
-  if (!product) notFound();
+  if (!rawProduct) notFound();
+  const product = await withResolvedProductImage(rawProduct);
 
-  const related = allProducts
-    .filter((p) => p.category === product.category && p.id !== product.id)
-    .slice(0, 4);
+  const related = await withResolvedProductImages(
+    allProducts.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4)
+  );
 
   return (
     <div className="container-page py-10 sm:py-14">
@@ -45,7 +47,7 @@ export default async function ProductDetailPage({ params }) {
       </nav>
 
       <div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-2">
-        <ProductGallery images={product.images} name={product.name} />
+        <ProductGallery images={product.imageUrls} name={product.name} />
 
         <div>
           <span className="badge">{product.category}</span>

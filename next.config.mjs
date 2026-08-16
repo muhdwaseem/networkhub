@@ -8,6 +8,16 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    // Required for next/image to optimize product/brand images uploaded to
+    // Supabase Storage — without this, remote images from this host are
+    // rejected outright rather than just skipping optimization.
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "dafjnjvtxnadztvvjsnc.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+    ],
   },
 };
 

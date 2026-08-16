@@ -89,7 +89,7 @@ export default function ProductsTable({ initialProducts, categories }) {
                   <div className="flex items-center gap-3">
                     <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-slate-50 ring-1 ring-slate-200">
                       <Image
-                        src={p.images?.[0] || "/images/placeholders/accessory.svg"}
+                        src={p.imageUrls?.[0] || "/images/placeholders/accessory.svg"}
                         alt=""
                         fill
                         sizes="44px"

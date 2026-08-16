@@ -1,10 +1,12 @@
 import { getProducts, getCategories } from "@/lib/db";
+import { withResolvedProductImages } from "@/lib/images";
 import ProductsTable from "@/components/admin/ProductsTable";
 
 export const metadata = { title: "Products" };
 
 export default async function AdminProductsPage() {
-  const [products, categories] = await Promise.all([getProducts(), getCategories()]);
+  const [rawProducts, categories] = await Promise.all([getProducts(), getCategories()]);
+  const products = await withResolvedProductImages(rawProducts);
 
   return (
     <div>

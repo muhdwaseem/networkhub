@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getProducts, createProduct } from "@/lib/db";
 import { saveUploadedImage } from "@/lib/upload";
+import { withResolvedProductImages, withResolvedProductImage } from "@/lib/images";
 
 function parseSpecs(raw) {
   if (!raw) return [];
@@ -11,7 +12,7 @@ function parseSpecs(raw) {
 }
 
 export async function GET() {
-  const products = await getProducts();
+  const products = await withResolvedProductImages(await getProducts());
   return NextResponse.json({ products });
 }
 
@@ -41,5 +42,5 @@ export async function POST(request) {
     images,
   });
 
-  return NextResponse.json({ product }, { status: 201 });
+  return NextResponse.json({ product: await withResolvedProductImage(product) }, { status: 201 });
 }

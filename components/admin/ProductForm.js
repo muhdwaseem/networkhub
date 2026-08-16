@@ -27,8 +27,16 @@ export default function ProductForm({ mode, product, categories, brands }) {
   const [newBrand, setNewBrand] = useState({ name: "", type: "active" });
   const [usingNewBrand, setUsingNewBrand] = useState(false);
 
+  // `path` is the stable value stored in the database and resubmitted via
+  // keepImages on save; `previewUrl` is a short-lived signed URL only used
+  // to actually render the thumbnail (the bucket is private, so the raw
+  // path alone isn't a fetchable image src).
   const [existingImages, setExistingImages] = useState(
-    (product?.images || []).map((url) => ({ url, keep: true }))
+    (product?.images || []).map((path, i) => ({
+      path,
+      previewUrl: product?.imageUrls?.[i] || path,
+      keep: true,
+    }))
   );
   const [newFiles, setNewFiles] = useState([]); // [{ file, previewUrl }]
 
@@ -151,7 +159,7 @@ export default function ProductForm({ mode, product, categories, brands }) {
       if (fields.featured) formData.set("featured", "on");
       newFiles.forEach(({ file }) => formData.append("images", file));
       if (mode === "edit") {
-        existingImages.filter((img) => img.keep).forEach((img) => formData.append("keepImages", img.url));
+        existingImages.filter((img) => img.keep).forEach((img) => formData.append("keepImages", img.path));
       }
 
       const url = mode === "edit" ? `/api/admin/products/${product.id}` : "/api/admin/products";
@@ -312,8 +320,8 @@ export default function ProductForm({ mode, product, categories, brands }) {
             <p className="field-hint mb-2">Uncheck an image to remove it when you save.</p>
             <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
               {existingImages.map((img, i) => (
-                <label key={img.url} className={`relative block aspect-square overflow-hidden rounded-lg ring-2 ${img.keep ? "ring-brand-600" : "ring-slate-200 opacity-40"}`}>
-                  <Image src={img.url} alt="" fill sizes="120px" className="object-cover" />
+                <label key={img.path} className={`relative block aspect-square overflow-hidden rounded-lg ring-2 ${img.keep ? "ring-brand-600" : "ring-slate-200 opacity-40"}`}>
+                  <Image src={img.previewUrl} alt="" fill sizes="120px" className="object-cover" />
                   <input
                     type="checkbox"
                     checked={img.keep}

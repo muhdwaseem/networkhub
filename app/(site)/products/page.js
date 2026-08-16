@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { getProducts, getCategories, getBrands, getSettings } from "@/lib/db";
+import { withResolvedProductImages } from "@/lib/images";
 import ProductsExplorer from "@/components/site/ProductsExplorer";
 
 export const metadata = {
@@ -8,12 +9,13 @@ export const metadata = {
 };
 
 export default async function ProductsPage() {
-  const [products, categories, brands, settings] = await Promise.all([
+  const [rawProducts, categories, brands, settings] = await Promise.all([
     getProducts(),
     getCategories(),
     getBrands(),
     getSettings(),
   ]);
+  const products = await withResolvedProductImages(rawProducts);
 
   return (
     <div className="container-page py-10 sm:py-14">

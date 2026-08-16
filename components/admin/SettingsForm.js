@@ -20,8 +20,8 @@ export default function SettingsForm({ settings }) {
   });
   const [logoFile, setLogoFile] = useState(null);
   const [heroFile, setHeroFile] = useState(null);
-  const [logoPreview, setLogoPreview] = useState(settings.logo);
-  const [heroPreview, setHeroPreview] = useState(settings.heroImage);
+  const [logoPreview, setLogoPreview] = useState(settings.logoUrl);
+  const [heroPreview, setHeroPreview] = useState(settings.heroImageUrl);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);

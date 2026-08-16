@@ -22,7 +22,7 @@ export default async function Footer({ settings }) {
       <div className="container-page grid grid-cols-1 gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <Image
-            src={settings.logo}
+            src={settings.logoUrl}
             alt={settings.businessName}
             width={160}
             height={40}

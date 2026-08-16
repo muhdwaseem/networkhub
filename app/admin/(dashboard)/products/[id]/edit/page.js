@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getProductById, getCategories, getBrands } from "@/lib/db";
+import { withResolvedProductImage } from "@/lib/images";
 import ProductForm from "@/components/admin/ProductForm";
 
 export async function generateMetadata({ params }) {
@@ -10,12 +11,13 @@ export async function generateMetadata({ params }) {
 
 export default async function EditProductPage({ params }) {
   const { id } = await params;
-  const [product, categories, brands] = await Promise.all([
+  const [rawProduct, categories, brands] = await Promise.all([
     getProductById(id),
     getCategories(),
     getBrands(),
   ]);
-  if (!product) notFound();
+  if (!rawProduct) notFound();
+  const product = await withResolvedProductImage(rawProduct);
 
   return (
     <div>

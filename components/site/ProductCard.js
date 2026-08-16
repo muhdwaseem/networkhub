@@ -4,7 +4,7 @@ import { waLink } from "@/lib/enquiry";
 import EmailEnquiryButton from "./EmailEnquiryButton";
 
 export default function ProductCard({ product, settings }) {
-  const image = product.images?.[0];
+  const image = product.imageUrls?.[0];
   const href = `/products/${product.id}`;
 
   return (

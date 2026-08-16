@@ -1,10 +1,11 @@
 import { getSettings } from "@/lib/db";
+import { withResolvedSettingsImages } from "@/lib/images";
 import SettingsForm from "@/components/admin/SettingsForm";
 
 export const metadata = { title: "Settings" };
 
 export default async function AdminSettingsPage() {
-  const settings = await getSettings();
+  const settings = await withResolvedSettingsImages(await getSettings());
 
   return (
     <div>

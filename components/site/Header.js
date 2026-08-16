@@ -31,7 +31,7 @@ export default function Header({ settings }) {
       <div className="container-page flex h-16 items-center justify-between gap-4">
         <Link href="/" className="flex shrink-0 items-center gap-2">
           <Image
-            src={settings.logo}
+            src={settings.logoUrl}
             alt={settings.businessName}
             width={160}
             height={40}

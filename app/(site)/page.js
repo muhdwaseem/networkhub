@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getProducts, getCategories, getBrands, getSettings } from "@/lib/db";
+import { withResolvedProductImages, withResolvedBrandLogos, withResolvedSettingsImages } from "@/lib/images";
 import { waLink } from "@/lib/enquiry";
 import ProductCard from "@/components/site/ProductCard";
 import BrandsSection from "@/components/site/BrandsSection";
@@ -14,11 +15,16 @@ const CATEGORY_IMAGES = {
 };
 
 export default async function HomePage() {
-  const [products, categories, brands, settings] = await Promise.all([
+  const [rawProducts, categories, rawBrands, rawSettings] = await Promise.all([
     getProducts(),
     getCategories(),
     getBrands(),
     getSettings(),
+  ]);
+  const [products, brands, settings] = await Promise.all([
+    withResolvedProductImages(rawProducts),
+    withResolvedBrandLogos(rawBrands),
+    withResolvedSettingsImages(rawSettings),
   ]);
 
   const featured = (products.filter((p) => p.featured).length ? products.filter((p) => p.featured) : products).slice(0, 8);
@@ -39,7 +45,7 @@ export default async function HomePage() {
       <section className="relative overflow-hidden bg-ink-950 text-white">
         <div className="absolute inset-0">
           <Image
-            src={settings.heroImage || "/images/hero-networking.jpg"}
+            src={settings.heroImageUrl || "/images/hero-networking.jpg"}
             alt=""
             fill
             priority

@@ -15,8 +15,8 @@ export default function BrandCard({ brand, count }) {
       className="group card flex flex-col items-center gap-3 p-5 text-center transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-500/10"
     >
       <div className="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-50 to-brand-100 ring-1 ring-brand-100 transition group-hover:from-brand-500 group-hover:to-brand-700">
-        {brand.logo ? (
-          <Image src={brand.logo} alt={brand.name} fill sizes="64px" className="object-contain p-2" />
+        {brand.logoUrl ? (
+          <Image src={brand.logoUrl} alt={brand.name} fill sizes="64px" className="object-contain p-2" />
         ) : (
           <span className="text-lg font-bold text-brand-700 group-hover:text-white">{initials}</span>
         )}

@@ -1,10 +1,12 @@
 import { getBrands, getProducts } from "@/lib/db";
+import { withResolvedBrandLogos } from "@/lib/images";
 import BrandManager from "@/components/admin/BrandManager";
 
 export const metadata = { title: "Brands" };
 
 export default async function AdminBrandsPage() {
-  const [brands, products] = await Promise.all([getBrands(), getProducts()]);
+  const [rawBrands, products] = await Promise.all([getBrands(), getProducts()]);
+  const brands = await withResolvedBrandLogos(rawBrands);
   const counts = products.reduce((acc, p) => {
     acc[p.brand] = (acc[p.brand] || 0) + 1;
     return acc;

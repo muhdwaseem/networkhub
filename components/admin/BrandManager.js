@@ -4,10 +4,10 @@ import { useState } from "react";
 import Image from "next/image";
 
 function BrandLogo({ brand }) {
-  if (brand.logo) {
+  if (brand.logoUrl) {
     return (
       <span className="relative block h-9 w-9 shrink-0 overflow-hidden rounded-full bg-slate-100 ring-1 ring-slate-200">
-        <Image src={brand.logo} alt="" fill sizes="36px" className="object-contain p-1" />
+        <Image src={brand.logoUrl} alt="" fill sizes="36px" className="object-contain p-1" />
       </span>
     );
   }

@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { getBrandById, updateBrand, deleteBrand, reassignProductsBrand, getBrands, getProducts } from "@/lib/db";
 import { saveUploadedImage } from "@/lib/upload";
+import { withResolvedBrandLogos } from "@/lib/images";
 
 export async function GET(request, { params }) {
   const { id } = await params;
   const brand = await getBrandById(id);
   if (!brand) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  return NextResponse.json({ brand });
+  const [resolved] = await withResolvedBrandLogos([brand]);
+  return NextResponse.json({ brand: resolved });
 }
 
 export async function PUT(request, { params }) {
@@ -35,7 +37,8 @@ export async function PUT(request, { params }) {
     if (updated.name !== existing.name) {
       await reassignProductsBrand(existing.name, updated.name);
     }
-    return NextResponse.json({ brand: updated });
+    const [resolved] = await withResolvedBrandLogos([updated]);
+    return NextResponse.json({ brand: resolved });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 400 });
   }
@@ -56,6 +59,6 @@ export async function DELETE(request, { params }) {
   }
 
   await deleteBrand(id);
-  const brands = await getBrands();
+  const brands = await withResolvedBrandLogos(await getBrands());
   return NextResponse.json({ brands });
 }

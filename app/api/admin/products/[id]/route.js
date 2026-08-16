@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getProductById, updateProduct, deleteProduct } from "@/lib/db";
 import { saveUploadedImage, deleteUploadedImage } from "@/lib/upload";
+import { withResolvedProductImage } from "@/lib/images";
 
 function parseSpecs(raw) {
   if (!raw) return [];
@@ -14,7 +15,7 @@ export async function GET(request, { params }) {
   const { id } = await params;
   const product = await getProductById(id);
   if (!product) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  return NextResponse.json({ product });
+  return NextResponse.json({ product: await withResolvedProductImage(product) });
 }
 
 export async function PUT(request, { params }) {
@@ -53,7 +54,7 @@ export async function PUT(request, { params }) {
 
   for (const img of removedImages) await deleteUploadedImage(img);
 
-  return NextResponse.json({ product });
+  return NextResponse.json({ product: await withResolvedProductImage(product) });
 }
 
 export async function DELETE(request, { params }) {
