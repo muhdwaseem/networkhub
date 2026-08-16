@@ -14,7 +14,7 @@ export default async function AdminLoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12">
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center text-center">
-          <Image src={settings.logoUrl} alt={settings.businessName} width={160} height={40} className="h-9 w-auto" />
+          <Image src={settings.logoUrl} alt={settings.businessName} width={193} height={40} className="h-9 w-auto" />
           <h1 className="mt-6 text-xl font-bold text-ink-900">Admin Sign In</h1>
           <p className="mt-1 text-sm text-slate-500">Manage products, images and site settings.</p>
         </div>

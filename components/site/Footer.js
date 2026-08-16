@@ -24,7 +24,7 @@ export default async function Footer({ settings }) {
           <Image
             src={settings.logoUrl}
             alt={settings.businessName}
-            width={160}
+            width={193}
             height={40}
             className="h-9 w-auto brightness-0 invert"
           />
