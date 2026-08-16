@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { getSettings } from "@/lib/db";
-import { waLink, mailLink } from "@/lib/enquiry";
+import { waLink } from "@/lib/enquiry";
 import ContactForm from "@/components/site/ContactForm";
+import EmailEnquiryButton from "@/components/site/EmailEnquiryButton";
 
 export const metadata = {
   title: "Contact",
@@ -21,13 +22,6 @@ export default async function ContactPage() {
       href: waLink(settings),
       external: true,
       cta: "Open WhatsApp",
-    },
-    {
-      title: "Email",
-      value: settings.email,
-      href: mailLink(settings),
-      external: false,
-      cta: "Send an email",
     },
     {
       title: "Phone",
@@ -62,7 +56,36 @@ export default async function ContactPage() {
 
       <section className="container-page py-14 sm:py-20">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {cards.map((c) => (
+          {cards[0] && (
+            <a
+              href={cards[0].href}
+              target={cards[0].external ? "_blank" : undefined}
+              rel={cards[0].external ? "noopener noreferrer" : undefined}
+              className="card p-5 transition-shadow hover:shadow-md"
+            >
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+                {cards[0].title}
+              </h3>
+              <p className="mt-2 text-sm font-medium text-ink-900">{cards[0].value}</p>
+              <span className="mt-3 inline-block text-sm font-semibold text-brand-700">
+                {cards[0].cta} &rarr;
+              </span>
+            </a>
+          )}
+
+          {settings.email && (
+            <EmailEnquiryButton className="card p-5 text-left transition-shadow hover:shadow-md">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+                Email
+              </h3>
+              <p className="mt-2 text-sm font-medium text-ink-900">{settings.email}</p>
+              <span className="mt-3 inline-block text-sm font-semibold text-brand-700">
+                Send an email &rarr;
+              </span>
+            </EmailEnquiryButton>
+          )}
+
+          {cards.slice(1).map((c) => (
             <a
               key={c.title}
               href={c.href}

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-export default function EmailEnquiryButton({ productName, className = "btn-secondary", label = "Email" }) {
+export default function EmailEnquiryButton({ productName, className = "btn-secondary", label = "Email", children, "aria-label": ariaLabel }) {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState(
@@ -54,8 +54,8 @@ export default function EmailEnquiryButton({ productName, className = "btn-secon
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className={className}>
-        {label}
+      <button type="button" onClick={() => setOpen(true)} className={className} aria-label={ariaLabel}>
+        {children || label}
       </button>
 
       {open && (

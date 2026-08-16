@@ -1,8 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getCategories } from "@/lib/db";
-import { waLink, mailLink } from "@/lib/enquiry";
-import { IconMail, IconPhoneCall } from "./icons";
+import { waLink } from "@/lib/enquiry";
+import { IconMail } from "./icons";
+import EmailEnquiryButton from "./EmailEnquiryButton";
 
 function IconWhatsapp(p) {
   return (
@@ -43,22 +44,12 @@ export default async function Footer({ settings }) {
               </a>
             )}
             {settings.email && (
-              <a
-                href={mailLink(settings)}
+              <EmailEnquiryButton
                 aria-label="Email"
                 className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 transition hover:bg-brand-600"
               >
                 <IconMail className="h-4 w-4" />
-              </a>
-            )}
-            {settings.phoneDisplay && (
-              <a
-                href={`tel:${settings.phoneDisplay.replace(/\s/g, "")}`}
-                aria-label="Call"
-                className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 transition hover:bg-brand-600"
-              >
-                <IconPhoneCall className="h-4 w-4" />
-              </a>
+              </EmailEnquiryButton>
             )}
           </div>
         </div>
@@ -91,9 +82,6 @@ export default async function Footer({ settings }) {
             <li>
               <Link href="/contact" className="text-slate-400 transition-colors hover:text-white">Contact</Link>
             </li>
-            <li>
-              <Link href="/admin/login" className="text-slate-500 transition-colors hover:text-white">Admin Login</Link>
-            </li>
           </ul>
         </div>
 
@@ -104,9 +92,9 @@ export default async function Footer({ settings }) {
             {settings.phoneDisplay && <li>{settings.phoneDisplay}</li>}
             {settings.email && (
               <li>
-                <a href={mailLink(settings)} className="transition-colors hover:text-white">
+                <EmailEnquiryButton className="text-slate-400 transition-colors hover:text-white">
                   {settings.email}
-                </a>
+                </EmailEnquiryButton>
               </li>
             )}
             {settings.whatsappNumber && (

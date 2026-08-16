@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getProducts, getCategories, getBrands, getSettings } from "@/lib/db";
-import { waLink, mailLink } from "@/lib/enquiry";
+import { waLink } from "@/lib/enquiry";
 import ProductCard from "@/components/site/ProductCard";
 import BrandsSection from "@/components/site/BrandsSection";
 import { IconCheck, IconArrow, IconShield, IconSpark, IconTruck } from "@/components/site/icons";
@@ -298,22 +298,12 @@ export default async function HomePage() {
               <a href={waLink(settings)} target="_blank" rel="noopener noreferrer" className="btn-whatsapp">
                 Chat on WhatsApp
               </a>
-              {settings.email && (
-                <a
-                  href={mailLink(settings)}
-                  className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20"
-                >
-                  {settings.email}
-                </a>
-              )}
-              {settings.phoneDisplay && (
-                <a
-                  href={`tel:${settings.phoneDisplay.replace(/\s/g, "")}`}
-                  className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20"
-                >
-                  {settings.phoneDisplay}
-                </a>
-              )}
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20"
+              >
+                Contact Us
+              </Link>
             </div>
             <div className="mx-auto mt-10 grid max-w-2xl gap-4 text-sm sm:grid-cols-3">
               <div className="flex items-center justify-center gap-2 text-white/85"><IconCheck className="h-4 w-4" /> No account required</div>

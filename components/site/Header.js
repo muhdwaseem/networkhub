@@ -59,15 +59,7 @@ export default function Header({ settings }) {
           })}
         </nav>
 
-        <div className="hidden items-center gap-3 md:flex">
-          {settings.phoneDisplay && (
-            <a
-              href={`tel:${settings.phoneDisplay.replace(/\s/g, "")}`}
-              className="text-sm font-medium text-ink-800 hover:text-brand-700"
-            >
-              {settings.phoneDisplay}
-            </a>
-          )}
+        <div className="hidden md:block">
           <a
             className="btn-whatsapp btn-sm"
             href={waLink(settings)}
