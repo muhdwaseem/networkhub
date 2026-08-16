@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 export default function EmailEnquiryButton({ productName, className = "btn-secondary", label = "Email", children, "aria-label": ariaLabel }) {
   const [open, setOpen] = useState(false);
@@ -58,7 +59,7 @@ export default function EmailEnquiryButton({ productName, className = "btn-secon
         {children || label}
       </button>
 
-      {open && (
+      {open && createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-900/60 p-4">
           <button
             type="button"
@@ -139,7 +140,8 @@ export default function EmailEnquiryButton({ productName, className = "btn-secon
               </form>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
