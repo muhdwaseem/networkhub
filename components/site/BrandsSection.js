@@ -1,6 +1,6 @@
 import BrandCard from "./BrandCard";
 
-export default function BrandsSection({ title, subtitle, brands, products }) {
+export default function BrandsSection({ title, subtitle, brands, counts }) {
   if (!brands.length) return null;
 
   return (
@@ -14,7 +14,7 @@ export default function BrandsSection({ title, subtitle, brands, products }) {
 
       <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
         {brands.map((b) => (
-          <BrandCard key={b.id} brand={b} count={products.filter((p) => p.brand === b.name).length} />
+          <BrandCard key={b.id} brand={b} count={counts.get(b.name) || 0} />
         ))}
       </div>
     </div>

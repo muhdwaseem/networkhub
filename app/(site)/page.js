@@ -1,6 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getProducts, getBrands, getSettings } from "@/lib/db";
+import {
+  getCategoryCounts,
+  getBrandCounts,
+  getFeaturedProducts,
+  getUnbrandedProducts,
+  getProductCount,
+  getBrands,
+  getSettings,
+} from "@/lib/db";
 import { withResolvedProductImages, withResolvedBrandLogos, withResolvedSettingsImages } from "@/lib/images";
 import { waLink } from "@/lib/enquiry";
 import ProductCard from "@/components/site/ProductCard";
@@ -16,13 +24,24 @@ const CATEGORY_IMAGES = {
 };
 
 export default async function HomePage() {
-  const [rawProducts, rawBrands, rawSettings] = await Promise.all([
-    getProducts(),
-    getBrands(),
-    getSettings(),
-  ]);
-  const [products, brands, settings] = await Promise.all([
-    withResolvedProductImages(rawProducts),
+  // Previously this page called getProducts() - the entire catalog, every
+  // column, paginated - just to derive counts and pick a handful of
+  // products to show. At ~2800 rows that was a ~1.2MB payload and a
+  // multi-second fetch on every homepage view. Each section below now
+  // fetches only what it actually needs.
+  const [categoryCounts, brandCounts, rawFeatured, rawOther, rawBrands, rawSettings, totalProducts] =
+    await Promise.all([
+      getCategoryCounts(),
+      getBrandCounts(),
+      getFeaturedProducts(8),
+      getUnbrandedProducts(4),
+      getBrands(),
+      getSettings(),
+      getProductCount(),
+    ]);
+  const [featured, otherProducts, brands, settings] = await Promise.all([
+    withResolvedProductImages(rawFeatured),
+    withResolvedProductImages(rawOther),
     withResolvedBrandLogos(rawBrands),
     withResolvedSettingsImages(rawSettings),
   ]);
@@ -31,24 +50,17 @@ export default async function HomePage() {
   // to grid as hero tiles, so the biggest ones get the visual treatment
   // below, and groupCategories() organises the full set into a browsable
   // "Browse All Categories" section further down so nothing is hidden.
-  const categoryCounts = new Map();
-  for (const p of products) {
-    if (!p.category) continue;
-    categoryCounts.set(p.category, (categoryCounts.get(p.category) || 0) + 1);
-  }
   const topCategories = [...categoryCounts.entries()]
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8)
     .map(([name, count]) => ({ name, count }));
   const categoryGroups = groupCategories([...categoryCounts.keys()]);
 
-  const featured = (products.filter((p) => p.featured).length ? products.filter((p) => p.featured) : products).slice(0, 8);
   const activeBrands = brands.filter((b) => b.type === "active");
   const passiveBrands = brands.filter((b) => b.type === "passive");
-  const otherProducts = products.filter((p) => !p.brand).slice(0, 4);
-  const quoteSample = products.slice(0, 4);
+  const quoteSample = featured.slice(0, 4);
   const stats = [
-    { value: `${products.length}`, label: `Product${products.length === 1 ? "" : "s"} in stock` },
+    { value: `${totalProducts}`, label: `Product${totalProducts === 1 ? "" : "s"} in stock` },
     { value: `${brands.length}`, label: `Brand${brands.length === 1 ? "" : "s"} stocked` },
     { value: "Genuine", label: "Manufacturer warranty" },
     { value: "Same-day", label: "WhatsApp response" },
@@ -238,7 +250,7 @@ export default async function HomePage() {
             title="Active Brands"
             subtitle="Powered networking, computing and security equipment."
             brands={activeBrands}
-            products={products}
+            counts={brandCounts}
           />
         </div>
       )}
@@ -249,7 +261,7 @@ export default async function HomePage() {
           title="Passive Brands"
           subtitle="Structured cabling and infrastructure essentials."
           brands={passiveBrands}
-          products={products}
+          counts={brandCounts}
         />
       )}
 

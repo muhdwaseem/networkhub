@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProductById, getProducts, getSettings } from "@/lib/db";
+import { getProductById, getRelatedProducts, getSettings } from "@/lib/db";
 import { withResolvedProductImage, withResolvedProductImages } from "@/lib/images";
 import { waLink } from "@/lib/enquiry";
 import ProductGallery from "@/components/site/ProductGallery";
@@ -19,18 +19,15 @@ export async function generateMetadata({ params }) {
 
 export default async function ProductDetailPage({ params }) {
   const { id } = await params;
-  const [rawProduct, settings, allProducts] = await Promise.all([
-    getProductById(id),
-    getSettings(),
-    getProducts(),
-  ]);
+  const [rawProduct, settings] = await Promise.all([getProductById(id), getSettings()]);
 
   if (!rawProduct) notFound();
-  const product = await withResolvedProductImage(rawProduct);
 
-  const related = await withResolvedProductImages(
-    allProducts.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4)
-  );
+  const [product, relatedRaw] = await Promise.all([
+    withResolvedProductImage(rawProduct),
+    getRelatedProducts(rawProduct.category, rawProduct.id, 4),
+  ]);
+  const related = await withResolvedProductImages(relatedRaw);
 
   return (
     <div className="container-page py-10 sm:py-14">
