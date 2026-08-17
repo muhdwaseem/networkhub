@@ -15,10 +15,10 @@ export default async function ProductsPage({ searchParams }) {
   const search = typeof sp.q === "string" ? sp.q : "";
   const category = typeof sp.category === "string" ? sp.category : "";
   const brand = typeof sp.brand === "string" ? sp.brand : "";
-  const page = Math.max(1, parseInt(sp.page, 10) || 1);
+  const requestedPage = Math.max(1, parseInt(sp.page, 10) || 1);
 
-  const [{ products: rawProducts, total }, categories, brands, settings] = await Promise.all([
-    getProductsPage({ search, category, brand, page, pageSize: PAGE_SIZE }),
+  const [{ products: rawProducts, total, page }, categories, brands, settings] = await Promise.all([
+    getProductsPage({ search, category, brand, page: requestedPage, pageSize: PAGE_SIZE }),
     getCategories(),
     getBrands(),
     getSettings(),
