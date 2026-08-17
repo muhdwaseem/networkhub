@@ -5,6 +5,7 @@ import { withResolvedProductImages, withResolvedBrandLogos, withResolvedSettings
 import { waLink } from "@/lib/enquiry";
 import ProductCard from "@/components/site/ProductCard";
 import BrandsSection from "@/components/site/BrandsSection";
+import { groupCategories } from "@/lib/categoryGroups";
 import { IconCheck, IconArrow, IconShield, IconSpark, IconTruck } from "@/components/site/icons";
 
 const CATEGORY_IMAGES = {
@@ -26,9 +27,10 @@ export default async function HomePage() {
     withResolvedSettingsImages(rawSettings),
   ]);
 
-  // The catalog now spans ~49 categories (RainbowStone import), too many to
-  // grid on the homepage - show the biggest ones here, everything else is
-  // still reachable via the category chips on /products.
+  // The catalog now spans ~49 categories (RainbowStone import) - too many
+  // to grid as hero tiles, so the biggest ones get the visual treatment
+  // below, and groupCategories() organises the full set into a browsable
+  // "Browse All Categories" section further down so nothing is hidden.
   const categoryCounts = new Map();
   for (const p of products) {
     if (!p.category) continue;
@@ -38,6 +40,7 @@ export default async function HomePage() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8)
     .map(([name, count]) => ({ name, count }));
+  const categoryGroups = groupCategories([...categoryCounts.keys()]);
 
   const featured = (products.filter((p) => p.featured).length ? products.filter((p) => p.featured) : products).slice(0, 8);
   const activeBrands = brands.filter((b) => b.type === "active");
@@ -195,6 +198,38 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* Browse all categories, grouped */}
+      <div className="border-t border-slate-200 bg-slate-50">
+        <section className="container-page py-14 sm:py-20">
+          <div className="eyebrow">Full Catalog</div>
+          <h2 className="text-2xl font-bold tracking-tight text-ink-900 sm:text-3xl">
+            Browse every category we stock.
+          </h2>
+
+          <div className="mt-8 grid grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+            {categoryGroups.map((group) => (
+              <div key={group.name}>
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+                  {group.name}
+                </h3>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {group.categories.map((cat) => (
+                    <Link
+                      key={cat}
+                      href={`/products?category=${encodeURIComponent(cat)}`}
+                      className="rounded-full bg-white px-3 py-1.5 text-sm text-ink-800 shadow-sm ring-1 ring-slate-200 transition-colors hover:bg-ink-900 hover:text-white hover:ring-ink-900"
+                    >
+                      {cat}
+                      <span className="ml-1.5 opacity-60">{categoryCounts.get(cat) || 0}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
 
       {/* Active Brands */}
       {activeBrands.length > 0 && (

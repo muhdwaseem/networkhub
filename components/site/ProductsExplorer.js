@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { groupCategories } from "@/lib/categoryGroups";
 import ProductCard from "./ProductCard";
 
 const UNBRANDED_VALUE = "__unbranded__";
@@ -81,7 +82,11 @@ export default function ProductsExplorer({
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  const chips = ["All", ...categories];
+  // 49+ categories don't work as a chip row (it just wraps into an
+  // unreadable wall of buttons), so they're grouped into a select with
+  // optgroups instead - same idea as the "Browse All Categories" section
+  // on the homepage, just in dropdown form to match the brand filter.
+  const categoryGroups = groupCategories(categories);
   const hasUnbranded = products.some((p) => !p.brand);
   const brandOptions = [
     "All",
@@ -97,21 +102,22 @@ export default function ProductsExplorer({
   return (
     <div>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap gap-2">
-          {chips.map((c) => (
-            <button
-              key={c}
-              type="button"
-              onClick={() => selectCategory(c)}
-              className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                category === c
-                  ? "bg-ink-900 text-white"
-                  : "bg-slate-100 text-ink-800 hover:bg-slate-200"
-              }`}
-            >
-              {c}
-            </button>
-          ))}
+        <div className="flex gap-2">
+          <select
+            className="input sm:w-56"
+            value={category}
+            onChange={(e) => selectCategory(e.target.value)}
+            aria-label="Filter by category"
+          >
+            <option value="All">All categories</option>
+            {categoryGroups.map((group) => (
+              <optgroup key={group.name} label={group.name}>
+                {group.categories.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
         </div>
         <div className="flex gap-2">
           <select
