@@ -77,7 +77,8 @@ export default function ProductsExplorer({
   }, []);
 
   function goToPage(n) {
-    router.push(buildUrl({ page: n > 1 ? String(n) : undefined }), { scroll: false });
+    router.push(buildUrl({ page: n > 1 ? String(n) : undefined }), { scroll: true });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   const chips = ["All", ...categories];
