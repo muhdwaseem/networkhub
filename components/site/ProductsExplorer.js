@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { groupCategories } from "@/lib/categoryGroups";
 import ProductCard from "./ProductCard";
@@ -20,6 +20,13 @@ export default function ProductsExplorer({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  // Wrapping every navigation in a transition gives instant tactile feedback
+  // (dim the grid, disable pagination) the moment a filter/page is clicked,
+  // rather than the page appearing to do nothing for the ~0.5-1.5s server
+  // round trip it now takes with a 2000+ row catalog. It also suppresses
+  // the route's loading.js full-skeleton flash for these soft navigations —
+  // that fallback still covers slow/direct page loads.
+  const [isPending, startTransition] = useTransition();
   // The URL is the source of truth for category/brand/search/page, so
   // they're derived directly from searchParams each render instead of
   // duplicated into their own state (which would need an effect to stay in
@@ -54,7 +61,9 @@ export default function ProductsExplorer({
   // page navigation pushes a new entry, since users expect Back to step
   // through pages they've viewed.
   function updateFilters(updates) {
-    router.replace(buildUrl({ ...updates, page: undefined }), { scroll: false });
+    startTransition(() => {
+      router.replace(buildUrl({ ...updates, page: undefined }), { scroll: false });
+    });
   }
 
   function selectCategory(cat) {
@@ -78,7 +87,9 @@ export default function ProductsExplorer({
   }, []);
 
   function goToPage(n) {
-    router.push(buildUrl({ page: n > 1 ? String(n) : undefined }), { scroll: true });
+    startTransition(() => {
+      router.push(buildUrl({ page: n > 1 ? String(n) : undefined }), { scroll: true });
+    });
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -143,9 +154,15 @@ export default function ProductsExplorer({
         </div>
       </div>
 
-      <p className="mt-4 text-sm text-slate-500">
+      <p className="mt-4 flex items-center gap-2 text-sm text-slate-500">
         {total} product{total === 1 ? "" : "s"} found
         {totalPages > 1 ? ` — page ${page} of ${totalPages}` : ""}
+        {isPending && (
+          <span className="inline-flex items-center gap-1 text-brand-700" aria-live="polite">
+            <span className="h-3 w-3 animate-spin rounded-full border-2 border-brand-300 border-t-brand-700" />
+            Loading...
+          </span>
+        )}
       </p>
 
       {products.length === 0 ? (
@@ -157,7 +174,11 @@ export default function ProductsExplorer({
         </div>
       ) : (
         <>
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div
+            className={`mt-6 grid grid-cols-1 gap-4 transition-opacity sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ${
+              isPending ? "opacity-50" : "opacity-100"
+            }`}
+          >
             {products.map((p) => (
               <ProductCard key={p.id} product={p} settings={settings} />
             ))}
@@ -168,7 +189,7 @@ export default function ProductsExplorer({
               <button
                 type="button"
                 onClick={() => goToPage(page - 1)}
-                disabled={page <= 1}
+                disabled={page <= 1 || isPending}
                 className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-ink-800 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Previous
@@ -179,7 +200,7 @@ export default function ProductsExplorer({
               <button
                 type="button"
                 onClick={() => goToPage(page + 1)}
-                disabled={page >= totalPages}
+                disabled={page >= totalPages || isPending}
                 className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-ink-800 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Next
