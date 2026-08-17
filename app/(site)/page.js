@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getProducts, getCategories, getBrands, getSettings } from "@/lib/db";
+import { getProducts, getBrands, getSettings } from "@/lib/db";
 import { withResolvedProductImages, withResolvedBrandLogos, withResolvedSettingsImages } from "@/lib/images";
 import { waLink } from "@/lib/enquiry";
 import ProductCard from "@/components/site/ProductCard";
@@ -15,9 +15,8 @@ const CATEGORY_IMAGES = {
 };
 
 export default async function HomePage() {
-  const [rawProducts, categories, rawBrands, rawSettings] = await Promise.all([
+  const [rawProducts, rawBrands, rawSettings] = await Promise.all([
     getProducts(),
-    getCategories(),
     getBrands(),
     getSettings(),
   ]);
@@ -26,6 +25,19 @@ export default async function HomePage() {
     withResolvedBrandLogos(rawBrands),
     withResolvedSettingsImages(rawSettings),
   ]);
+
+  // The catalog now spans ~49 categories (RainbowStone import), too many to
+  // grid on the homepage - show the biggest ones here, everything else is
+  // still reachable via the category chips on /products.
+  const categoryCounts = new Map();
+  for (const p of products) {
+    if (!p.category) continue;
+    categoryCounts.set(p.category, (categoryCounts.get(p.category) || 0) + 1);
+  }
+  const topCategories = [...categoryCounts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([name, count]) => ({ name, count }));
 
   const featured = (products.filter((p) => p.featured).length ? products.filter((p) => p.featured) : products).slice(0, 8);
   const activeBrands = brands.filter((b) => b.type === "active");
@@ -158,32 +170,29 @@ export default async function HomePage() {
         </div>
 
         <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {categories.map((cat) => {
-            const count = products.filter((p) => p.category === cat).length;
-            return (
-              <Link
-                key={cat}
-                href={`/products?category=${encodeURIComponent(cat)}`}
-                className="group card relative flex aspect-[4/3] flex-col justify-end overflow-hidden p-5 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-500/10"
-              >
-                <Image
-                  src={CATEGORY_IMAGES[cat] || "/images/placeholders/accessory.svg"}
-                  alt={cat}
-                  fill
-                  sizes="(min-width: 1024px) 25vw, 50vw"
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-ink-900/85 via-ink-900/10 to-transparent" />
-                <div className="relative flex items-end justify-between gap-2">
-                  <div>
-                    <h3 className="text-base font-semibold text-white">{cat}</h3>
-                    <p className="text-xs text-slate-300">{count} product{count === 1 ? "" : "s"}</p>
-                  </div>
-                  <IconArrow className="h-4 w-4 shrink-0 text-white/50 transition group-hover:translate-x-1 group-hover:text-white" />
+          {topCategories.map(({ name, count }) => (
+            <Link
+              key={name}
+              href={`/products?category=${encodeURIComponent(name)}`}
+              className="group card relative flex aspect-[4/3] flex-col justify-end overflow-hidden p-5 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-500/10"
+            >
+              <Image
+                src={CATEGORY_IMAGES[name] || "/images/placeholders/accessory.svg"}
+                alt={name}
+                fill
+                sizes="(min-width: 1024px) 25vw, 50vw"
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink-900/85 via-ink-900/10 to-transparent" />
+              <div className="relative flex items-end justify-between gap-2">
+                <div>
+                  <h3 className="text-base font-semibold text-white">{name}</h3>
+                  <p className="text-xs text-slate-300">{count} product{count === 1 ? "" : "s"}</p>
                 </div>
-              </Link>
-            );
-          })}
+                <IconArrow className="h-4 w-4 shrink-0 text-white/50 transition group-hover:translate-x-1 group-hover:text-white" />
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 
