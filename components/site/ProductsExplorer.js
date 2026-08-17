@@ -1,48 +1,84 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ProductCard from "./ProductCard";
 
 const UNBRANDED_VALUE = "__unbranded__";
+const SEARCH_DEBOUNCE_MS = 400;
 
-export default function ProductsExplorer({ products, categories, brands, settings }) {
+export default function ProductsExplorer({
+  products,
+  categories,
+  brands,
+  settings,
+  total,
+  page,
+  totalPages,
+  initialSearch,
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  // The URL is the source of truth for the selected category/brand, so
+  // The URL is the source of truth for category/brand/search/page, so
   // they're derived directly from searchParams each render instead of
-  // duplicated into their own state (which would need an effect to stay in sync).
+  // duplicated into their own state (which would need an effect to stay in
+  // sync). The one exception is the search box: it needs to feel responsive
+  // to every keystroke, so it gets local state that's debounced into the URL.
   const category = searchParams.get("category") || "All";
   const brand = searchParams.get("brand") || "All";
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialSearch || "");
+  const debounceRef = useRef(null);
+
+  // Keep the search box in sync when the URL changes from outside our own
+  // debounce (browser back/forward, a pasted link with ?q=...). Adjusting
+  // state during render (rather than in an effect) avoids the extra
+  // render-then-effect pass — see https://react.dev/learn/you-might-not-need-an-effect
+  const [prevInitialSearch, setPrevInitialSearch] = useState(initialSearch);
+  if (initialSearch !== prevInitialSearch) {
+    setPrevInitialSearch(initialSearch);
+    setQuery(initialSearch || "");
+  }
+
+  function buildUrl(updates) {
+    const params = new URLSearchParams(searchParams.toString());
+    for (const [key, value] of Object.entries(updates)) {
+      if (!value || value === "All") params.delete(key);
+      else params.set(key, value);
+    }
+    return `/products${params.toString() ? `?${params.toString()}` : ""}`;
+  }
+
+  // Filter/search changes replace the current history entry (so typing or
+  // flipping chips doesn't spam Back), and always reset to page 1. Explicit
+  // page navigation pushes a new entry, since users expect Back to step
+  // through pages they've viewed.
+  function updateFilters(updates) {
+    router.replace(buildUrl({ ...updates, page: undefined }), { scroll: false });
+  }
 
   function selectCategory(cat) {
-    const params = new URLSearchParams(searchParams.toString());
-    if (cat === "All") params.delete("category");
-    else params.set("category", cat);
-    router.replace(`/products${params.toString() ? `?${params.toString()}` : ""}`, { scroll: false });
+    updateFilters({ category: cat });
   }
 
   function selectBrand(b) {
-    const params = new URLSearchParams(searchParams.toString());
-    if (b === "All") params.delete("brand");
-    else params.set("brand", b);
-    router.replace(`/products${params.toString() ? `?${params.toString()}` : ""}`, { scroll: false });
+    updateFilters({ brand: b });
   }
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return products.filter((p) => {
-      const matchesCategory = category === "All" || p.category === category;
-      const matchesBrand =
-        brand === "All" ||
-        (brand === UNBRANDED_VALUE ? !p.brand : p.brand === brand);
-      const matchesQuery =
-        !q ||
-        [p.name, p.brand, p.category, p.sku, p.description].join(" ").toLowerCase().includes(q);
-      return matchesCategory && matchesBrand && matchesQuery;
-    });
-  }, [products, category, brand, query]);
+  function handleQueryChange(value) {
+    setQuery(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      updateFilters({ q: value.trim() });
+    }, SEARCH_DEBOUNCE_MS);
+  }
+
+  useEffect(() => () => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+  }, []);
+
+  function goToPage(n) {
+    router.push(buildUrl({ page: n > 1 ? String(n) : undefined }), { scroll: false });
+  }
 
   const chips = ["All", ...categories];
   const hasUnbranded = products.some((p) => !p.brand);
@@ -91,7 +127,7 @@ export default function ProductsExplorer({ products, categories, brands, setting
             <input
               type="search"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => handleQueryChange(e.target.value)}
               placeholder="Search products..."
               className="input"
               aria-label="Search products"
@@ -101,10 +137,11 @@ export default function ProductsExplorer({ products, categories, brands, setting
       </div>
 
       <p className="mt-4 text-sm text-slate-500">
-        {filtered.length} product{filtered.length === 1 ? "" : "s"} found
+        {total} product{total === 1 ? "" : "s"} found
+        {totalPages > 1 ? ` — page ${page} of ${totalPages}` : ""}
       </p>
 
-      {filtered.length === 0 ? (
+      {products.length === 0 ? (
         <div className="mt-10 rounded-2xl border border-dashed border-slate-300 p-12 text-center">
           <p className="text-sm text-slate-500">
             No products match your search. Try a different keyword, or WhatsApp us — we may still
@@ -112,11 +149,37 @@ export default function ProductsExplorer({ products, categories, brands, setting
           </p>
         </div>
       ) : (
-        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {filtered.map((p) => (
-            <ProductCard key={p.id} product={p} settings={settings} />
-          ))}
-        </div>
+        <>
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {products.map((p) => (
+              <ProductCard key={p.id} product={p} settings={settings} />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="mt-10 flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => goToPage(page - 1)}
+                disabled={page <= 1}
+                className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-ink-800 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Previous
+              </button>
+              <span className="text-sm text-slate-500">
+                Page {page} of {totalPages}
+              </span>
+              <button
+                type="button"
+                onClick={() => goToPage(page + 1)}
+                disabled={page >= totalPages}
+                className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-ink-800 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
