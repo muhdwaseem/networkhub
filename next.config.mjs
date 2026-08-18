@@ -10,12 +10,14 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     // Required for next/image to optimize product/brand images uploaded to
     // Supabase Storage — without this, remote images from this host are
-    // rejected outright rather than just skipping optimization.
+    // rejected outright rather than just skipping optimization. Covers both
+    // "public/**" and "sign/**" since the "images" bucket is private and
+    // every URL is a signed one (see lib/upload.js's resolveImageUrl).
     remotePatterns: [
       {
         protocol: "https",
         hostname: "dafjnjvtxnadztvvjsnc.supabase.co",
-        pathname: "/storage/v1/object/public/**",
+        pathname: "/storage/v1/object/**",
       },
     ],
   },
