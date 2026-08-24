@@ -13,7 +13,7 @@ import { withResolvedProductImages, withResolvedBrandLogos, withResolvedSettings
 import { waLink } from "@/lib/enquiry";
 import ProductCard from "@/components/site/ProductCard";
 import BrandsSection from "@/components/site/BrandsSection";
-import { groupCategories } from "@/lib/categoryGroups";
+import { groupCategories, categoryLabel, categoryCount, mergeCategoryCounts } from "@/lib/categoryGroups";
 import { IconCheck, IconArrow, IconShield, IconSpark, IconTruck } from "@/components/site/icons";
 
 const CATEGORY_IMAGES = {
@@ -50,7 +50,7 @@ export default async function HomePage() {
   // to grid as hero tiles, so the biggest ones get the visual treatment
   // below, and groupCategories() organises the full set into a browsable
   // "Browse All Categories" section further down so nothing is hidden.
-  const topCategories = [...categoryCounts.entries()]
+  const topCategories = [...mergeCategoryCounts(categoryCounts).entries()]
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8)
     .map(([name, count]) => ({ name, count }));
@@ -193,7 +193,7 @@ export default async function HomePage() {
             >
               <Image
                 src={CATEGORY_IMAGES[name] || "/images/placeholders/accessory.svg"}
-                alt={name}
+                alt={categoryLabel(name)}
                 fill
                 sizes="(min-width: 1024px) 25vw, 50vw"
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -201,7 +201,7 @@ export default async function HomePage() {
               <div className="absolute inset-0 bg-gradient-to-t from-ink-900/85 via-ink-900/10 to-transparent" />
               <div className="relative flex items-end justify-between gap-2">
                 <div>
-                  <h3 className="text-base font-semibold text-white">{name}</h3>
+                  <h3 className="text-base font-semibold text-white">{categoryLabel(name)}</h3>
                   <p className="text-xs text-slate-300">{count} product{count === 1 ? "" : "s"}</p>
                 </div>
                 <IconArrow className="h-4 w-4 shrink-0 text-white/50 transition group-hover:translate-x-1 group-hover:text-white" />
@@ -232,8 +232,8 @@ export default async function HomePage() {
                       href={`/products?category=${encodeURIComponent(cat)}`}
                       className="rounded-full bg-white px-3 py-1.5 text-sm text-ink-800 shadow-sm ring-1 ring-slate-200 transition-colors hover:bg-ink-900 hover:text-white hover:ring-ink-900"
                     >
-                      {cat}
-                      <span className="ml-1.5 opacity-60">{categoryCounts.get(cat) || 0}</span>
+                      {categoryLabel(cat)}
+                      <span className="ml-1.5 opacity-60">{categoryCount(categoryCounts, cat)}</span>
                     </Link>
                   ))}
                 </div>

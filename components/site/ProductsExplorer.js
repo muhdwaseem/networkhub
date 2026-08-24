@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { groupCategories } from "@/lib/categoryGroups";
+import { groupCategories, categoryLabel } from "@/lib/categoryGroups";
 import ProductCard from "./ProductCard";
 
 const UNBRANDED_VALUE = "__unbranded__";
@@ -124,7 +124,7 @@ export default function ProductsExplorer({
             {categoryGroups.map((group) => (
               <optgroup key={group.name} label={group.name}>
                 {group.categories.map((c) => (
-                  <option key={c} value={c}>{c}</option>
+                  <option key={c} value={c}>{categoryLabel(c)}</option>
                 ))}
               </optgroup>
             ))}
