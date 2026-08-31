@@ -16,11 +16,18 @@ import BrandsSection from "@/components/site/BrandsSection";
 import { groupCategories, categoryLabel, categoryCount, mergeCategoryCounts } from "@/lib/categoryGroups";
 import { IconCheck, IconArrow, IconShield, IconSpark, IconTruck } from "@/components/site/icons";
 
+// Keyed by display label (categoryLabel()), not the raw category-count
+// key - for a merged category (see lib/categoryGroups.js's MERGES) that
+// raw key is the comma-joined member list, not something worth matching
+// against here.
 const CATEGORY_IMAGES = {
   Networking: "/images/placeholders/networking.svg",
   "Laptops & Computers": "/images/placeholders/laptop.svg",
   "Surveillance & Security": "/images/placeholders/cctv.svg",
   Accessories: "/images/placeholders/accessory.svg",
+  "Access Points": "/images/placeholders/access-points.jpg",
+  "NAS Enclosures": "/images/placeholders/nas-enclosures.jpg",
+  "Wall Mount Racks": "/images/placeholders/wall-mount-racks.jpg",
 };
 
 export default async function HomePage() {
@@ -192,7 +199,7 @@ export default async function HomePage() {
               className="group card relative flex aspect-[4/3] flex-col justify-end overflow-hidden p-5 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-500/10"
             >
               <Image
-                src={CATEGORY_IMAGES[name] || "/images/placeholders/accessory.svg"}
+                src={CATEGORY_IMAGES[categoryLabel(name)] || "/images/placeholders/accessory.svg"}
                 alt={categoryLabel(name)}
                 fill
                 sizes="(min-width: 1024px) 25vw, 50vw"
