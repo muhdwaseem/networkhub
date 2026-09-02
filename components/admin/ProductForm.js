@@ -170,7 +170,7 @@ export default function ProductForm({ mode, product, categories, brands }) {
         throw new Error(data.error || "Failed to save product.");
       }
 
-      router.push("/admin/products");
+      router.push("/admin-networkhub/products");
       router.refresh();
     } catch (err) {
       setError(err.message);
@@ -372,7 +372,7 @@ export default function ProductForm({ mode, product, categories, brands }) {
         <button type="submit" disabled={submitting} className="btn-primary">
           {submitting ? "Saving..." : mode === "edit" ? "Save changes" : "Create product"}
         </button>
-        <button type="button" onClick={() => router.push("/admin/products")} className="btn-secondary">
+        <button type="button" onClick={() => router.push("/admin-networkhub/products")} className="btn-secondary">
           Cancel
         </button>
       </div>

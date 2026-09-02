@@ -59,7 +59,7 @@ export default function ProductsTable({ initialProducts, categories }) {
             ))}
           </select>
         </div>
-        <Link href="/admin/products/new" className="btn-primary shrink-0">
+        <Link href="/admin-networkhub/products/new" className="btn-primary shrink-0">
           + Add Product
         </Link>
       </div>
@@ -116,7 +116,7 @@ export default function ProductsTable({ initialProducts, categories }) {
                 <td className="px-4 py-3 text-slate-600">{p.featured ? "★" : "—"}</td>
                 <td className="px-4 py-3">
                   <div className="flex justify-end gap-2">
-                    <Link href={`/admin/products/${p.id}/edit`} className="btn-secondary btn-sm">
+                    <Link href={`/admin-networkhub/products/${p.id}/edit`} className="btn-secondary btn-sm">
                       Edit
                     </Link>
                     <button

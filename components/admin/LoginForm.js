@@ -26,7 +26,7 @@ export default function LoginForm() {
         setError(data.error || "Login failed.");
         return;
       }
-      const target = searchParams.get("from") || "/admin";
+      const target = searchParams.get("from") || "/admin-networkhub";
       router.push(target);
       router.refresh();
     } catch {

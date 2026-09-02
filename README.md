@@ -19,7 +19,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000 for the public site, and http://localhost:3000/admin/login
+Open http://localhost:3000 for the public site, and http://localhost:3000/admin-networkhub/login
 for the admin panel.
 
 A `.env.local` is already included for local development with a working default admin
@@ -72,7 +72,7 @@ and you should deploy with persistent storage (not an ephemeral/serverless files
    node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
    ```
 
-3. Restart the server. Log in at `/admin/login`.
+3. Restart the server. Log in at `/admin-networkhub/login`.
 
 From the admin panel you can:
 
@@ -142,7 +142,7 @@ admin panel to work.
 ```
 app/
   (site)/            Public pages: home, products, product detail, about, contact
-  admin/
+  admin-networkhub/
     login/            Admin login (unauthenticated)
     (dashboard)/       Dashboard, products, categories, settings (auth-protected)
   api/admin/           Admin API routes (products, categories, settings, login, logout)
@@ -160,7 +160,7 @@ lib/
   email.js              Sends enquiry emails via Resend
 data/                  products.json, categories.json, settings.json
 public/uploads/         Admin-uploaded images (gitignored)
-proxy.js               Route guard for /admin and /api/admin (Next.js 16's
+proxy.js               Route guard for /admin-networkhub and /api/admin (Next.js 16's
                          replacement for middleware.js)
 legacy-static-site/    The previous plain-HTML version, kept for reference only —
                          not used by the app.
