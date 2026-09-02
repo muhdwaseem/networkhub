@@ -33,15 +33,15 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className="mt-8 flex flex-wrap gap-3">
-        <Link href="/admin/products/new" className="btn-primary">+ Add Product</Link>
-        <Link href="/admin/categories" className="btn-secondary">Manage Categories</Link>
-        <Link href="/admin/settings" className="btn-secondary">Edit Site Settings</Link>
+        <Link href="/admin-networkhub/products/new" className="btn-primary">+ Add Product</Link>
+        <Link href="/admin-networkhub/categories" className="btn-secondary">Manage Categories</Link>
+        <Link href="/admin-networkhub/settings" className="btn-secondary">Edit Site Settings</Link>
       </div>
 
       <div className="mt-10">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-ink-900">Recently updated</h2>
-          <Link href="/admin/products" className="text-sm font-semibold text-brand-700 hover:text-brand-600">
+          <Link href="/admin-networkhub/products" className="text-sm font-semibold text-brand-700 hover:text-brand-600">
             View all &rarr;
           </Link>
         </div>
@@ -50,7 +50,7 @@ export default async function AdminDashboardPage() {
           {recent.map((p) => (
             <Link
               key={p.id}
-              href={`/admin/products/${p.id}/edit`}
+              href={`/admin-networkhub/products/${p.id}/edit`}
               className="flex items-center gap-4 px-4 py-3 hover:bg-slate-50"
             >
               <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-slate-50 ring-1 ring-slate-200">

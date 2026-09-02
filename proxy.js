@@ -64,12 +64,16 @@ async function rateLimitProducts(request) {
   return NextResponse.next();
 }
 
-// Guards every /admin page and /api/admin route. The login page and login
-// API must stay open, obviously, or nobody could ever sign in.
+// Guards every /admin-networkhub page and /api/admin route. The login page
+// and login API must stay open, obviously, or nobody could ever sign in.
+// The page path is deliberately not just "/admin" - a non-default path
+// isn't a real access control (see the auth check below for that), but it
+// does stop the page from turning up in the kind of automated /admin,
+// /wp-admin, etc. path scans every public site gets hit with constantly.
 function guardAdmin(request) {
   const { pathname } = request.nextUrl;
 
-  if (pathname === "/admin/login" || pathname === "/api/admin/login") {
+  if (pathname === "/admin-networkhub/login" || pathname === "/api/admin/login") {
     return NextResponse.next();
   }
 
@@ -80,7 +84,7 @@ function guardAdmin(request) {
     if (pathname.startsWith("/api/admin")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const loginUrl = new URL("/admin/login", request.url);
+    const loginUrl = new URL("/admin-networkhub/login", request.url);
     loginUrl.searchParams.set("from", pathname);
     return NextResponse.redirect(loginUrl);
   }
@@ -93,7 +97,7 @@ function guardAdmin(request) {
 export function proxy(request) {
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
+  if (pathname.startsWith("/admin-networkhub") || pathname.startsWith("/api/admin")) {
     return guardAdmin(request);
   }
 
@@ -105,5 +109,5 @@ export function proxy(request) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*", "/products/:path*"],
+  matcher: ["/admin-networkhub/:path*", "/api/admin/:path*", "/products/:path*"],
 };

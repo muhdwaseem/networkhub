@@ -5,11 +5,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
 const LINKS = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/products", label: "Products" },
-  { href: "/admin/categories", label: "Categories" },
-  { href: "/admin/brands", label: "Brands" },
-  { href: "/admin/settings", label: "Settings" },
+  { href: "/admin-networkhub", label: "Dashboard" },
+  { href: "/admin-networkhub/products", label: "Products" },
+  { href: "/admin-networkhub/categories", label: "Categories" },
+  { href: "/admin-networkhub/brands", label: "Brands" },
+  { href: "/admin-networkhub/settings", label: "Settings" },
 ];
 
 export default function AdminNav({ businessName }) {
@@ -22,7 +22,7 @@ export default function AdminNav({ businessName }) {
     try {
       await fetch("/api/admin/logout", { method: "POST" });
     } finally {
-      router.push("/admin/login");
+      router.push("/admin-networkhub/login");
       router.refresh();
     }
   }
@@ -39,7 +39,8 @@ export default function AdminNav({ businessName }) {
 
         <nav className="hidden items-center gap-1 sm:flex">
           {LINKS.map((link) => {
-            const active = link.href === "/admin" ? pathname === "/admin" : pathname.startsWith(link.href);
+            const active =
+            link.href === "/admin-networkhub" ? pathname === "/admin-networkhub" : pathname.startsWith(link.href);
             return (
               <Link
                 key={link.href}
@@ -71,7 +72,8 @@ export default function AdminNav({ businessName }) {
 
       <nav className="container-page flex gap-1 overflow-x-auto border-t border-slate-800 py-2 sm:hidden">
         {LINKS.map((link) => {
-          const active = link.href === "/admin" ? pathname === "/admin" : pathname.startsWith(link.href);
+          const active =
+            link.href === "/admin-networkhub" ? pathname === "/admin-networkhub" : pathname.startsWith(link.href);
           return (
             <Link
               key={link.href}
