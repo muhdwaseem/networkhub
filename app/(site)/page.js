@@ -28,6 +28,11 @@ const CATEGORY_IMAGES = {
   "Access Points": "/images/placeholders/access-points.jpg",
   "NAS Enclosures": "/images/placeholders/nas-enclosures.jpg",
   "Wall Mount Racks": "/images/placeholders/wall-mount-racks.jpg",
+  "Copper & Fiber Cabling": "/images/placeholders/copper-fiber-cabling.jpg",
+  "Patch Cords": "/images/placeholders/patch-cords.jpg",
+  "Routers & Gateways": "/images/placeholders/routers-gateways.jpg",
+  "NAS Hard Drives": "/images/placeholders/nas-hard-drives.jpg",
+  "Floor Server Racks": "/images/placeholders/floor-server-racks.jpg",
 };
 
 export default async function HomePage() {
