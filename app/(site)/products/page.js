@@ -1,14 +1,45 @@
 import { Suspense } from "react";
 import { getProductsPage, getCategories, getBrands, getSettings } from "@/lib/db";
 import { withResolvedProductImages } from "@/lib/images";
+import { getSiteUrl } from "@/lib/seo";
 import ProductsExplorer from "@/components/site/ProductsExplorer";
 
-export const metadata = {
-  title: "Products",
-  description: "Browse our full product catalog and enquire via WhatsApp or email.",
-};
-
 const PAGE_SIZE = 24;
+
+export async function generateMetadata({ searchParams }) {
+  const sp = await searchParams;
+  const search = typeof sp.q === "string" ? sp.q : "";
+  const category = typeof sp.category === "string" ? sp.category : "";
+  const brand = typeof sp.brand === "string" ? sp.brand : "";
+
+  // A free-text search box produces unlimited near-duplicate URLs with no
+  // ranking value of their own — keep them out of the index, matching
+  // Google's own guidance on internal search-result pages, while still
+  // letting crawlers follow links from them to real product/category pages.
+  if (search) {
+    return {
+      title: `Search results for "${search}"`,
+      robots: { index: false, follow: true },
+    };
+  }
+
+  if (category || brand) {
+    const label = category || brand;
+    return {
+      title: `${label} — Products`,
+      description: `Browse ${label} products. Enquire via WhatsApp or email — no account or checkout required.`,
+      alternates: {
+        canonical: `${getSiteUrl()}/products?${category ? `category=${encodeURIComponent(category)}` : `brand=${encodeURIComponent(brand)}`}`,
+      },
+    };
+  }
+
+  return {
+    title: "Products",
+    description: "Browse our full product catalog and enquire via WhatsApp or email.",
+    alternates: { canonical: `${getSiteUrl()}/products` },
+  };
+}
 
 export default async function ProductsPage({ searchParams }) {
   const sp = await searchParams;

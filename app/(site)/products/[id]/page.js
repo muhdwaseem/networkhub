@@ -3,17 +3,27 @@ import { notFound } from "next/navigation";
 import { getProductById, getRelatedProducts, getSettings } from "@/lib/db";
 import { withResolvedProductImage, withResolvedProductImages } from "@/lib/images";
 import { waLink } from "@/lib/enquiry";
+import { getSiteUrl, parsePriceValue } from "@/lib/seo";
 import ProductGallery from "@/components/site/ProductGallery";
 import ProductCard from "@/components/site/ProductCard";
 import EmailEnquiryButton from "@/components/site/EmailEnquiryButton";
 
 export async function generateMetadata({ params }) {
   const { id } = await params;
-  const product = await getProductById(id);
-  if (!product) return { title: "Product not found" };
+  const rawProduct = await getProductById(id);
+  if (!rawProduct) return { title: "Product not found" };
+  const product = await withResolvedProductImage(rawProduct);
+  const description = product.description || product.specs?.join(", ");
   return {
     title: product.name,
-    description: product.description || product.specs?.join(", "),
+    description,
+    alternates: { canonical: `${getSiteUrl()}/products/${id}` },
+    openGraph: {
+      title: product.name,
+      description,
+      type: "website",
+      images: product.imageUrls?.[0] ? [product.imageUrls[0]] : undefined,
+    },
   };
 }
 
@@ -29,8 +39,38 @@ export default async function ProductDetailPage({ params }) {
   ]);
   const related = await withResolvedProductImages(relatedRaw);
 
+  const priceValue = parsePriceValue(product.price);
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description || product.specs?.join(", ") || undefined,
+    sku: product.sku || undefined,
+    image: product.imageUrls?.length ? product.imageUrls : undefined,
+    brand: product.brand ? { "@type": "Brand", name: product.brand } : undefined,
+    category: product.category || undefined,
+    // Only claim a price/offer when one was actually parseable from the
+    // free-text price field — omitting it here is safer than emitting a
+    // guessed or missing price, which Search Console flags as invalid.
+    ...(priceValue && {
+      offers: {
+        "@type": "Offer",
+        url: `${getSiteUrl()}/products/${product.id}`,
+        priceCurrency: "AED",
+        price: priceValue,
+        availability: product.inStock
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
+      },
+    }),
+  };
+
   return (
     <div className="container-page py-10 sm:py-14">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
       <nav className="flex flex-wrap items-center gap-1.5 text-sm text-slate-500">
         <Link href="/" className="hover:text-brand-700">Home</Link>
         <span>/</span>
