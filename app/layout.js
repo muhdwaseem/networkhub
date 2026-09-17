@@ -17,14 +17,31 @@ const inter = Inter({
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {
-  const settings = await getSettings();
+  const rawSettings = await getSettings();
+  const settings = await withResolvedSettingsImages(rawSettings);
+  const siteUrl = getSiteUrl();
+  const title = `${settings.businessName} | ${settings.tagline}`;
+  const description = settings.description || settings.tagline;
+  // logoUrl is only set when the logo is an admin-uploaded storage key —
+  // the default "/images/logo.png" local asset needs making absolute here.
+  const ogImage = settings.heroImageUrl || settings.logoUrl || `${siteUrl}${rawSettings.logo || "/images/logo.png"}`;
+
   return {
-    metadataBase: new URL(getSiteUrl()),
+    metadataBase: new URL(siteUrl),
     title: {
-      default: `${settings.businessName} | ${settings.tagline}`,
+      default: title,
       template: `%s | ${settings.businessName}`,
     },
-    description: settings.description || settings.tagline,
+    description,
+    alternates: { canonical: siteUrl },
+    openGraph: {
+      title,
+      description,
+      url: siteUrl,
+      siteName: settings.businessName,
+      type: "website",
+      images: ogImage ? [ogImage] : undefined,
+    },
   };
 }
 
@@ -48,6 +65,21 @@ export default async function RootLayout({ children }) {
     address: settings.address ? { "@type": "PostalAddress", streetAddress: settings.address } : undefined,
     logo: logoUrl,
   };
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: settings.businessName,
+    url: siteUrl,
+    description: settings.description || settings.tagline || undefined,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${siteUrl}/products?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
 
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
@@ -55,6 +87,10 @@ export default async function RootLayout({ children }) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
         {children}
       </body>

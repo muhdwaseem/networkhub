@@ -33,6 +33,23 @@ const nextConfig = {
       },
     ],
   },
+  // A full Content-Security-Policy is deliberately not set here: this site's
+  // JSON-LD <script> tags and Next.js's own hydration bootstrap script are
+  // inline, so a strict CSP without proper per-request nonce plumbing would
+  // break the page rather than just tighten it. These three are safe,
+  // no-tradeoff additions on their own.
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
