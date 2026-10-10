@@ -1,22 +1,35 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getProducts, getCategories } from "@/lib/db";
+import {
+  getProductCount,
+  getInStockCount,
+  getFeaturedCount,
+  getCategories,
+  getRecentlyUpdatedProducts,
+} from "@/lib/db";
+import { withResolvedProductImages } from "@/lib/images";
 
 export const metadata = { title: "Dashboard" };
 
 export default async function AdminDashboardPage() {
-  const [products, categories] = await Promise.all([getProducts(), getCategories()]);
+  // Lean counts + a 5-row query instead of fetching the full ~2,900-row
+  // catalog just to call .length/.filter() on it — same lesson as the
+  // admin products list and SEO audit pages.
+  const [productCount, inStockCount, categories, featuredCount, recentRaw] = await Promise.all([
+    getProductCount(),
+    getInStockCount(),
+    getCategories(),
+    getFeaturedCount(),
+    getRecentlyUpdatedProducts(5),
+  ]);
+  const recent = await withResolvedProductImages(recentRaw);
 
   const stats = [
-    { label: "Total products", value: products.length },
-    { label: "In stock", value: products.filter((p) => p.inStock).length },
+    { label: "Total products", value: productCount },
+    { label: "In stock", value: inStockCount },
     { label: "Categories", value: categories.length },
-    { label: "Featured", value: products.filter((p) => p.featured).length },
+    { label: "Featured", value: featuredCount },
   ];
-
-  const recent = [...products]
-    .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
-    .slice(0, 5);
 
   return (
     <div>
@@ -55,7 +68,7 @@ export default async function AdminDashboardPage() {
             >
               <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-slate-50 ring-1 ring-slate-200">
                 <Image
-                  src={p.images?.[0] || "/images/placeholders/accessory.svg"}
+                  src={p.imageUrls?.[0] || "/images/placeholders/accessory.svg"}
                   alt=""
                   fill
                   sizes="44px"
