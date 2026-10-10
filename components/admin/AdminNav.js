@@ -10,6 +10,8 @@ const LINKS = [
   { href: "/admin-networkhub/categories", label: "Categories" },
   { href: "/admin-networkhub/brands", label: "Brands" },
   { href: "/admin-networkhub/settings", label: "Settings" },
+  { href: "/admin-networkhub/seo-audit", label: "SEO Audit" },
+  { href: "/admin-networkhub/seo-templates", label: "SEO Templates" },
   { href: "/admin-networkhub/logs", label: "Logs" },
 ];
 
