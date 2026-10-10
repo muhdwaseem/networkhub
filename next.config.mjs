@@ -28,6 +28,14 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "oqrxggzeboqeoiphrgrh.supabase.co",
+        pathname: "/storage/v1/object/**",
+      },
+      // Old project, kept temporarily during the Supabase migration so a
+      // rollback (reverting the env vars) still works without a second
+      // deploy. Safe to delete once the old project is fully decommissioned.
+      {
+        protocol: "https",
         hostname: "dafjnjvtxnadztvvjsnc.supabase.co",
         pathname: "/storage/v1/object/**",
       },
