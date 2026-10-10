@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getProducts, createProduct } from "@/lib/db";
 import { saveUploadedImage } from "@/lib/upload";
 import { withResolvedProductImages, withResolvedProductImage } from "@/lib/images";
+import { logAdminAction } from "@/lib/auditLog";
 
 function parseSpecs(raw) {
   if (!raw) return [];
@@ -42,5 +43,6 @@ export async function POST(request) {
     images,
   });
 
+  await logAdminAction(request, { action: "create", entityType: "product", entityId: product.id, entityLabel: product.name });
   return NextResponse.json({ product: await withResolvedProductImage(product) }, { status: 201 });
 }

@@ -48,3 +48,19 @@ create table if not exists settings (
 );
 alter table settings enable row level security;
 insert into settings (id, data) values (1, '{}') on conflict (id) do nothing;
+
+-- Records every create/update/delete made from the admin panel (products,
+-- categories, brands, settings) — who, what, and when. Written by
+-- lib/auditLog.js, read paginated (never the whole table at once) by the
+-- admin Logs page.
+create table if not exists admin_audit_log (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  admin_username text not null,
+  action text not null check (action in ('create', 'update', 'delete')),
+  entity_type text not null,
+  entity_id text,
+  entity_label text not null default ''
+);
+alter table admin_audit_log enable row level security;
+create index if not exists admin_audit_log_created_at_idx on admin_audit_log (created_at desc);

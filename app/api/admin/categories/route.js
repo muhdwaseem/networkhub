@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCategories, addCategory, deleteCategory, getProducts } from "@/lib/db";
+import { logAdminAction } from "@/lib/auditLog";
 
 export async function GET() {
   const categories = await getCategories();
@@ -13,6 +14,7 @@ export async function POST(request) {
     return NextResponse.json({ error: "Category name is required." }, { status: 400 });
   }
   const categories = await addCategory(name);
+  await logAdminAction(request, { action: "create", entityType: "category", entityId: name, entityLabel: name });
   return NextResponse.json({ categories }, { status: 201 });
 }
 
@@ -33,5 +35,6 @@ export async function DELETE(request) {
   }
 
   const categories = await deleteCategory(name);
+  await logAdminAction(request, { action: "delete", entityType: "category", entityId: name, entityLabel: name });
   return NextResponse.json({ categories });
 }

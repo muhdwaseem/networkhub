@@ -1,24 +1,62 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
-export default function ProductsTable({ initialProducts, categories }) {
-  const [products, setProducts] = useState(initialProducts);
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("All");
+export default function ProductsTable({
+  products,
+  categories,
+  total,
+  page,
+  totalPages,
+  initialSearch,
+  initialCategory,
+}) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
+  // Local list only so a delete can remove a row immediately without
+  // waiting for a full server round-trip — the URL (search/category/page)
+  // remains the single source of truth for what's actually being viewed,
+  // same pattern as the public ProductsExplorer.
+  const [rows, setRows] = useState(products);
+  // useState's initial value only applies on first mount — when the URL
+  // changes (new page/search/category), the parent Server Component
+  // re-fetches and passes a new `products` prop, but this component stays
+  // mounted. Re-syncing inside a useEffect would cause an extra render
+  // pass; adjusting state directly during render (React's recommended
+  // pattern for this) resets it in the same pass instead.
+  const [prevProducts, setPrevProducts] = useState(products);
+  if (products !== prevProducts) {
+    setPrevProducts(products);
+    setRows(products);
+  }
+  const [query, setQuery] = useState(initialSearch);
   const [deletingId, setDeletingId] = useState(null);
   const [error, setError] = useState("");
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return products.filter((p) => {
-      const matchesCategory = category === "All" || p.category === category;
-      const matchesQuery = !q || [p.name, p.sku, p.brand].join(" ").toLowerCase().includes(q);
-      return matchesCategory && matchesQuery;
+  function buildUrl(updates) {
+    const params = new URLSearchParams(searchParams.toString());
+    for (const [key, value] of Object.entries(updates)) {
+      if (value === undefined || value === "") params.delete(key);
+      else params.set(key, value);
+    }
+    return `/admin-networkhub/products${params.toString() ? `?${params}` : ""}`;
+  }
+
+  function applyFilters(updates) {
+    startTransition(() => {
+      router.push(buildUrl({ ...updates, page: undefined }));
     });
-  }, [products, query, category]);
+  }
+
+  function goToPage(n) {
+    startTransition(() => {
+      router.push(buildUrl({ page: n > 1 ? String(n) : undefined }));
+    });
+  }
 
   async function handleDelete(product) {
     if (!confirm(`Delete "${product.name}"? This cannot be undone.`)) return;
@@ -30,7 +68,7 @@ export default function ProductsTable({ initialProducts, categories }) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || "Failed to delete product.");
       }
-      setProducts((prev) => prev.filter((p) => p.id !== product.id));
+      setRows((prev) => prev.filter((p) => p.id !== product.id));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -41,7 +79,13 @@ export default function ProductsTable({ initialProducts, categories }) {
   return (
     <div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-1 flex-col gap-3 sm:flex-row">
+        <form
+          className="flex flex-1 flex-col gap-3 sm:flex-row"
+          onSubmit={(e) => {
+            e.preventDefault();
+            applyFilters({ q: query });
+          }}
+        >
           <input
             className="input sm:max-w-xs"
             placeholder="Search products..."
@@ -50,15 +94,18 @@ export default function ProductsTable({ initialProducts, categories }) {
           />
           <select
             className="input sm:max-w-[200px]"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            defaultValue={initialCategory || "All"}
+            onChange={(e) => applyFilters({ category: e.target.value === "All" ? undefined : e.target.value })}
           >
             <option value="All">All categories</option>
             {categories.map((c) => (
               <option key={c} value={c}>{c}</option>
             ))}
           </select>
-        </div>
+          <button type="submit" className="btn-secondary shrink-0">
+            Search
+          </button>
+        </form>
         <Link href="/admin-networkhub/products/new" className="btn-primary shrink-0">
           + Add Product
         </Link>
@@ -70,7 +117,7 @@ export default function ProductsTable({ initialProducts, categories }) {
         </div>
       )}
 
-      <div className="mt-5 overflow-x-auto rounded-xl ring-1 ring-slate-200">
+      <div className={`mt-5 overflow-x-auto rounded-xl ring-1 ring-slate-200 ${isPending ? "opacity-60" : ""}`}>
         <table className="w-full min-w-[720px] divide-y divide-slate-200 bg-white text-sm">
           <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
             <tr>
@@ -83,7 +130,7 @@ export default function ProductsTable({ initialProducts, categories }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {filtered.map((p) => (
+            {rows.map((p) => (
               <tr key={p.id} className="align-middle">
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
@@ -131,7 +178,7 @@ export default function ProductsTable({ initialProducts, categories }) {
                 </td>
               </tr>
             ))}
-            {filtered.length === 0 && (
+            {rows.length === 0 && (
               <tr>
                 <td colSpan={6} className="px-4 py-10 text-center text-slate-500">
                   No products match your filters.
@@ -141,6 +188,30 @@ export default function ProductsTable({ initialProducts, categories }) {
           </tbody>
         </table>
       </div>
+
+      {totalPages > 1 && (
+        <div className="mt-4 flex items-center justify-between text-sm text-slate-600">
+          <button
+            type="button"
+            onClick={() => goToPage(page - 1)}
+            disabled={page <= 1 || isPending}
+            className="btn-secondary btn-sm disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <span>
+            Page {page} of {totalPages} — {total} total
+          </span>
+          <button
+            type="button"
+            onClick={() => goToPage(page + 1)}
+            disabled={page >= totalPages || isPending}
+            className="btn-secondary btn-sm disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }

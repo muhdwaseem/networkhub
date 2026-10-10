@@ -7,6 +7,14 @@ import { getSiteUrl } from "@/lib/seo";
 // robots.txt/sitemap.xml serve traditional search crawlers. Not a Next.js
 // built-in convention (unlike robots.js/sitemap.js), so this is a plain
 // route handler under a literal "llms.txt" folder.
+//
+// Like app/sitemap.js, a standalone route handler doesn't inherit the root
+// layout's force-dynamic setting and would otherwise try to pre-build this
+// once at build time — crashing on deployments without Supabase
+// credentials available at build time, and baking in stale settings/
+// categories until the next deploy. Forcing it dynamic fixes both.
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const [settings, categories] = await Promise.all([getSettings(), getCategories()]);
   const siteUrl = getSiteUrl();

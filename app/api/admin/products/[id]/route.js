@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getProductById, updateProduct, deleteProduct } from "@/lib/db";
 import { saveUploadedImage, deleteUploadedImage } from "@/lib/upload";
 import { withResolvedProductImage } from "@/lib/images";
+import { logAdminAction } from "@/lib/auditLog";
 
 function parseSpecs(raw) {
   if (!raw) return [];
@@ -54,6 +55,7 @@ export async function PUT(request, { params }) {
 
   for (const img of removedImages) await deleteUploadedImage(img);
 
+  await logAdminAction(request, { action: "update", entityType: "product", entityId: id, entityLabel: product.name });
   return NextResponse.json({ product: await withResolvedProductImage(product) });
 }
 
@@ -62,5 +64,6 @@ export async function DELETE(request, { params }) {
   const removed = await deleteProduct(id);
   if (!removed) return NextResponse.json({ error: "Not found" }, { status: 404 });
   for (const img of removed.images || []) await deleteUploadedImage(img);
+  await logAdminAction(request, { action: "delete", entityType: "product", entityId: id, entityLabel: removed.name });
   return NextResponse.json({ ok: true });
 }
