@@ -21,6 +21,8 @@ export default function ProductForm({ mode, product, categories, brands }) {
     specs: (product?.specs || []).join("\n"),
     inStock: product?.inStock ?? true,
     featured: product?.featured ?? false,
+    seoTitle: product?.seoTitle || "",
+    metaDescription: product?.metaDescription || "",
   });
   const [newCategory, setNewCategory] = useState("");
   const [usingNewCategory, setUsingNewCategory] = useState(categories.length === 0);
@@ -155,6 +157,8 @@ export default function ProductForm({ mode, product, categories, brands }) {
       formData.set("price", fields.price);
       formData.set("description", fields.description);
       formData.set("specs", fields.specs);
+      formData.set("seoTitle", fields.seoTitle);
+      formData.set("metaDescription", fields.metaDescription);
       if (fields.inStock) formData.set("inStock", "on");
       if (fields.featured) formData.set("featured", "on");
       newFiles.forEach(({ file }) => formData.append("images", file));
@@ -309,6 +313,41 @@ export default function ProductForm({ mode, product, categories, brands }) {
             placeholder={"Intel Core i5, 8GB RAM\n256GB SSD\n14\" display"}
           />
           <p className="field-hint">Shown as a bullet list on the product page.</p>
+        </div>
+      </section>
+
+      <section className="card space-y-5 p-6">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+          Search engine listing (optional)
+        </h2>
+        <p className="field-hint -mt-2">
+          Leave these blank to use the product name and description above exactly as they are —
+          only set these if you want the Google search result or browser tab title to say
+          something different from what&apos;s shown on the page itself.
+        </p>
+        <div>
+          <label className="label" htmlFor="seoTitle">SEO title</label>
+          <input
+            id="seoTitle"
+            className="input"
+            value={fields.seoTitle}
+            onChange={update("seoTitle")}
+            placeholder={fields.name || "Defaults to the product name"}
+            maxLength={70}
+          />
+          <p className="field-hint">{fields.seoTitle.length}/70 characters — shown as the page title in search results.</p>
+        </div>
+        <div>
+          <label className="label" htmlFor="metaDescription">Meta description</label>
+          <textarea
+            id="metaDescription"
+            className="input min-h-20"
+            value={fields.metaDescription}
+            onChange={update("metaDescription")}
+            placeholder={fields.description || "Defaults to the description above"}
+            maxLength={160}
+          />
+          <p className="field-hint">{fields.metaDescription.length}/160 characters — the summary shown under the title in search results.</p>
         </div>
       </section>
 
