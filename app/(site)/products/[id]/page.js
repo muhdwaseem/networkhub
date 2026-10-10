@@ -13,13 +13,17 @@ export async function generateMetadata({ params }) {
   const rawProduct = await getProductById(id);
   if (!rawProduct) return { title: "Product not found" };
   const product = await withResolvedProductImage(rawProduct);
-  const description = product.description || product.specs?.join(", ");
+  // seoTitle/metaDescription are optional admin overrides (see ProductForm's
+  // "Search engine listing" section) — blank by default, so this falls back
+  // to exactly the prior behavior unless an admin deliberately sets one.
+  const title = product.seoTitle || product.name;
+  const description = product.metaDescription || product.description || product.specs?.join(", ");
   return {
-    title: product.name,
+    title,
     description,
     alternates: { canonical: `${getSiteUrl()}/products/${id}` },
     openGraph: {
-      title: product.name,
+      title,
       description,
       type: "website",
       images: product.imageUrls?.[0] ? [product.imageUrls[0]] : undefined,
@@ -44,7 +48,7 @@ export default async function ProductDetailPage({ params }) {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
-    description: product.description || product.specs?.join(", ") || undefined,
+    description: product.metaDescription || product.description || product.specs?.join(", ") || undefined,
     sku: product.sku || undefined,
     image: product.imageUrls?.length ? product.imageUrls : undefined,
     brand: product.brand ? { "@type": "Brand", name: product.brand } : undefined,

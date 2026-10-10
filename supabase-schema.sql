@@ -32,10 +32,20 @@ create table if not exists products (
   specs jsonb not null default '[]',
   description text not null default '',
   images jsonb not null default '[]',
+  seo_title text not null default '',
+  meta_description text not null default '',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 alter table products enable row level security;
+
+-- Added after the table above already existed in production — alter table
+-- is a no-op (IF NOT EXISTS) on a fresh setup where create table just
+-- defined these columns itself, and adds them in place on the live table.
+-- Both blank by default: generateMetadata() falls back to name/description
+-- exactly as before until an admin deliberately overrides one.
+alter table products add column if not exists seo_title text not null default '';
+alter table products add column if not exists meta_description text not null default '';
 
 -- Settings is a single-row key-value blob (matches the old settings.json
 -- shape exactly, including the nested "socials" object), so admin UI code

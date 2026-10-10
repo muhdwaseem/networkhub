@@ -40,6 +40,8 @@ export async function POST(request) {
     featured: formData.get("featured") === "on",
     specs: parseSpecs(formData.get("specs")),
     description: formData.get("description"),
+    seoTitle: formData.get("seoTitle"),
+    metaDescription: formData.get("metaDescription"),
     images,
   });
 
