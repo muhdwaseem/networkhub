@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getBrandById, updateBrand, deleteBrand, reassignProductsBrand, getBrands, getProducts } from "@/lib/db";
 import { saveUploadedImage } from "@/lib/upload";
 import { withResolvedBrandLogos } from "@/lib/images";
+import { logAdminAction } from "@/lib/auditLog";
 
 export async function GET(request, { params }) {
   const { id } = await params;
@@ -38,6 +39,7 @@ export async function PUT(request, { params }) {
       await reassignProductsBrand(existing.name, updated.name);
     }
     const [resolved] = await withResolvedBrandLogos([updated]);
+    await logAdminAction(request, { action: "update", entityType: "brand", entityId: id, entityLabel: updated.name });
     return NextResponse.json({ brand: resolved });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 400 });
@@ -59,6 +61,7 @@ export async function DELETE(request, { params }) {
   }
 
   await deleteBrand(id);
+  await logAdminAction(request, { action: "delete", entityType: "brand", entityId: id, entityLabel: brand.name });
   const brands = await withResolvedBrandLogos(await getBrands());
   return NextResponse.json({ brands });
 }

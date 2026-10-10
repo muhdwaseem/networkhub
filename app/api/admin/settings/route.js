@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSettings, updateSettings } from "@/lib/db";
 import { saveUploadedImage } from "@/lib/upload";
+import { logAdminAction } from "@/lib/auditLog";
 
 export async function GET() {
   const settings = await getSettings();
@@ -38,5 +39,6 @@ export async function PUT(request) {
   }
 
   const settings = await updateSettings(data);
+  await logAdminAction(request, { action: "update", entityType: "settings", entityId: null, entityLabel: "Site settings" });
   return NextResponse.json({ settings });
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -22,18 +22,20 @@ export default function ProductsTable({
   // remains the single source of truth for what's actually being viewed,
   // same pattern as the public ProductsExplorer.
   const [rows, setRows] = useState(products);
-  const [query, setQuery] = useState(initialSearch);
-  const [deletingId, setDeletingId] = useState(null);
-  const [error, setError] = useState("");
-
   // useState's initial value only applies on first mount — when the URL
   // changes (new page/search/category), the parent Server Component
   // re-fetches and passes a new `products` prop, but this component stays
-  // mounted, so `rows` must be re-synced explicitly or it would keep
-  // showing the previous page's rows after navigating.
-  useEffect(() => {
+  // mounted. Re-syncing inside a useEffect would cause an extra render
+  // pass; adjusting state directly during render (React's recommended
+  // pattern for this) resets it in the same pass instead.
+  const [prevProducts, setPrevProducts] = useState(products);
+  if (products !== prevProducts) {
+    setPrevProducts(products);
     setRows(products);
-  }, [products]);
+  }
+  const [query, setQuery] = useState(initialSearch);
+  const [deletingId, setDeletingId] = useState(null);
+  const [error, setError] = useState("");
 
   function buildUrl(updates) {
     const params = new URLSearchParams(searchParams.toString());

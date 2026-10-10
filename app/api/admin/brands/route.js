@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getBrands, createBrand } from "@/lib/db";
 import { saveUploadedImage } from "@/lib/upload";
 import { withResolvedBrandLogos } from "@/lib/images";
+import { logAdminAction } from "@/lib/auditLog";
 
 export async function GET() {
   const brands = await withResolvedBrandLogos(await getBrands());
@@ -28,6 +29,7 @@ export async function POST(request) {
       withResolvedBrandLogos([created]),
       withResolvedBrandLogos(await getBrands()),
     ]);
+    await logAdminAction(request, { action: "create", entityType: "brand", entityId: created.id, entityLabel: created.name });
     return NextResponse.json({ brand, brands }, { status: 201 });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 400 });
