@@ -1,12 +1,62 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { groupCategories, categoryLabel } from "@/lib/categoryGroups";
 import ProductCard from "./ProductCard";
 
 const UNBRANDED_VALUE = "__unbranded__";
 const SEARCH_DEBOUNCE_MS = 400;
+
+// Previous, first, a window around the current page, last, Next — each of
+// them a real link. A bare Previous/Next pair means a crawler (and a human
+// who wants page 80) needs ~80 hops; the window keeps every page within a
+// couple of clicks of the start.
+function pageWindow(page, totalPages) {
+  const numbers = new Set([1, totalPages]);
+  for (let n = page - 2; n <= page + 2; n++) {
+    if (n >= 1 && n <= totalPages) numbers.add(n);
+  }
+  const sorted = [...numbers].sort((a, b) => a - b);
+
+  const items = [{ n: page - 1, label: "Previous", disabled: page <= 1 }];
+  sorted.forEach((n, i) => {
+    if (i > 0 && n - sorted[i - 1] > 1) items.push("gap");
+    items.push({ n, label: String(n) });
+  });
+  items.push({ n: page + 1, label: "Next", disabled: page >= totalPages });
+  return items;
+}
+
+// Renders a real <a href> so crawlers can follow it, but lets normal clicks
+// go through the in-app transition (dimmed grid, no full reload). Modified
+// clicks (new tab, etc.) are left to the browser.
+function PageLink({ n, label, current, disabled, href, onNavigate }) {
+  const base =
+    "rounded-lg border px-3 py-2 text-sm font-medium transition-colors min-w-10 text-center";
+  if (disabled) {
+    return <span className={`${base} cursor-not-allowed border-slate-200 text-slate-300`}>{label}</span>;
+  }
+  return (
+    <Link
+      href={href}
+      aria-current={current ? "page" : undefined}
+      onClick={(e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+        e.preventDefault();
+        onNavigate(n);
+      }}
+      className={`${base} ${
+        current
+          ? "border-brand-600 bg-brand-600 text-white"
+          : "border-slate-300 text-ink-800 hover:bg-slate-100"
+      }`}
+    >
+      {label}
+    </Link>
+  );
+}
 
 export default function ProductsExplorer({
   products,
@@ -185,30 +235,55 @@ export default function ProductsExplorer({
           </div>
 
           {totalPages > 1 && (
-            <div className="mt-10 flex items-center justify-center gap-3">
-              <button
-                type="button"
-                onClick={() => goToPage(page - 1)}
-                disabled={page <= 1 || isPending}
-                className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-ink-800 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                Previous
-              </button>
-              <span className="text-sm text-slate-500">
-                Page {page} of {totalPages}
-              </span>
-              <button
-                type="button"
-                onClick={() => goToPage(page + 1)}
-                disabled={page >= totalPages || isPending}
-                className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-ink-800 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                Next
-              </button>
-            </div>
+            <nav aria-label="Pagination" className="mt-10 flex flex-wrap items-center justify-center gap-2">
+              {pageWindow(page, totalPages).map((item, i) =>
+                item === "gap" ? (
+                  <span key={`gap-${i}`} className="px-1 text-slate-400">…</span>
+                ) : (
+                  <PageLink
+                    key={item.n}
+                    n={item.n}
+                    label={item.label}
+                    current={item.n === page}
+                    disabled={item.disabled || isPending}
+                    href={buildUrl({ page: item.n > 1 ? String(item.n) : undefined })}
+                    onNavigate={goToPage}
+                  />
+                )
+              )}
+            </nav>
           )}
         </>
       )}
+
+      {/* Real <a href> links to every category, always present in the page
+          HTML. The dropdown above is a <select>, which crawlers can't follow,
+          so without this the deeper categories are only discoverable via the
+          sitemap, not through the site's own internal links. */}
+      <details className="mt-12 rounded-xl border border-slate-200 p-4">
+        <summary className="cursor-pointer text-sm font-semibold text-ink-900">
+          Browse all categories
+        </summary>
+        <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {categoryGroups.map((group) => (
+            <div key={group.name}>
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{group.name}</h3>
+              <ul className="mt-2 space-y-1">
+                {group.categories.map((c) => (
+                  <li key={c}>
+                    <Link
+                      href={`/products?category=${encodeURIComponent(c)}`}
+                      className="text-sm text-brand-700 hover:underline"
+                    >
+                      {categoryLabel(c)}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </details>
     </div>
   );
 }

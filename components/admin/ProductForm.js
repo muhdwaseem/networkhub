@@ -44,6 +44,8 @@ export default function ProductForm({ mode, product, categories, brands }) {
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiNote, setAiNote] = useState({ text: "", warn: false });
 
   useEffect(() => {
     return () => newFiles.forEach((f) => URL.revokeObjectURL(f.previewUrl));
@@ -95,6 +97,41 @@ export default function ProductForm({ mode, product, categories, brands }) {
     setExistingImages((prev) =>
       prev.map((img, i) => (i === index ? { ...img, keep: !img.keep } : img))
     );
+  }
+
+  // Asks the server (which holds the Gemini key) for a title/description
+  // based on what's currently typed in the form. It only fills the two SEO
+  // fields — the product isn't saved until the normal Save button is used.
+  async function suggestWithAi() {
+    setAiLoading(true);
+    setAiNote({ text: "", warn: false });
+    try {
+      const res = await fetch("/api/admin/seo-ai/draft", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: fields.name,
+          brand: usingNewBrand ? newBrand.name : fields.brand,
+          category: usingNewCategory ? newCategory : fields.category,
+          sku: fields.sku,
+          specs: fields.specs,
+          description: fields.description,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Could not get a suggestion.");
+      const { seoTitle, metaDescription, warnings } = data.suggestion;
+      setFields((f) => ({ ...f, seoTitle, metaDescription }));
+      setAiNote(
+        warnings.length > 0
+          ? { text: `Check before saving: ${warnings.join(" ")}`, warn: true }
+          : { text: "Suggestion filled in — read it, edit if needed, then save the product.", warn: false }
+      );
+    } catch (err) {
+      setAiNote({ text: err.message, warn: true });
+    } finally {
+      setAiLoading(false);
+    }
   }
 
   async function handleSubmit(e) {
@@ -325,6 +362,14 @@ export default function ProductForm({ mode, product, categories, brands }) {
           only set these if you want the Google search result or browser tab title to say
           something different from what&apos;s shown on the page itself.
         </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <button type="button" className="btn-secondary btn-sm" onClick={suggestWithAi} disabled={aiLoading}>
+            {aiLoading ? "Thinking…" : "✨ Suggest with AI"}
+          </button>
+          {aiNote.text && (
+            <p className={`text-xs ${aiNote.warn ? "text-amber-700" : "text-emerald-700"}`}>{aiNote.text}</p>
+          )}
+        </div>
         <div>
           <label className="label" htmlFor="seoTitle">SEO title</label>
           <input

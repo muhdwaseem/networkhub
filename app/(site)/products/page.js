@@ -23,21 +23,37 @@ export async function generateMetadata({ searchParams }) {
     };
   }
 
+  // Each page of a listing is its own page for search engines: a canonical
+  // that always points at page 1 tells Google pages 2..N are duplicates of
+  // it and lets it discount the product links they contain, and identical
+  // titles across pages are flagged as duplicates. So pages beyond the
+  // first get a self-referencing canonical and a "Page N" title suffix.
+  const pageNum = Math.max(1, parseInt(sp.page, 10) || 1);
+  const pageParam = pageNum > 1 ? `page=${pageNum}` : "";
+  const pageSuffix = pageNum > 1 ? ` — Page ${pageNum}` : "";
+  const withParams = (...parts) => {
+    const query = parts.filter(Boolean).join("&");
+    return `${getSiteUrl()}/products${query ? `?${query}` : ""}`;
+  };
+
   if (category || brand) {
     const label = category || brand;
     return {
-      title: `${label} — Products`,
+      title: `${label} — Products${pageSuffix}`,
       description: `Browse ${label} products. Enquire via WhatsApp or email — no account or checkout required.`,
       alternates: {
-        canonical: `${getSiteUrl()}/products?${category ? `category=${encodeURIComponent(category)}` : `brand=${encodeURIComponent(brand)}`}`,
+        canonical: withParams(
+          category ? `category=${encodeURIComponent(category)}` : `brand=${encodeURIComponent(brand)}`,
+          pageParam
+        ),
       },
     };
   }
 
   return {
-    title: "Products",
+    title: `Products${pageSuffix}`,
     description: "Browse our full product catalog and enquire via WhatsApp or email.",
-    alternates: { canonical: `${getSiteUrl()}/products` },
+    alternates: { canonical: withParams(pageParam) },
   };
 }
 

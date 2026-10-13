@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { applyProductPatches } from "@/lib/db";
 import { runSeoAudit } from "@/lib/seoAudit";
 import { generateSeoTemplate } from "@/lib/seoTemplates";
 import { logAdminAction } from "@/lib/auditLog";
 
-// Vercel's default serverless function timeout is too short for bulk-
-// updating thousands of rows; this route can run up to a minute.
+// Thousands of single-row updates (see applyProductPatches) can take a
+// while; Vercel's default function timeout would cut that short.
 export const maxDuration = 60;
 
 // Only these two issue types have a safe, mechanical fix. "Missing
@@ -13,7 +13,6 @@ export const maxDuration = 60;
 // "duplicate title" would mean renaming the actual product, not just its
 // SEO override — both need a human, not a bulk action.
 const APPLIABLE_TYPES = new Set(["title_too_long", "duplicate_description"]);
-const BATCH_SIZE = 300;
 
 export async function POST(request) {
   const body = await request.json().catch(() => ({}));
@@ -27,8 +26,7 @@ export async function POST(request) {
   const targetRows = rows.filter((r) => flaggedIds.has(r.id));
 
   const force = type === "duplicate_description";
-  const now = new Date().toISOString();
-  const updates = [];
+  const patches = [];
   for (const row of targetRows) {
     const template = generateSeoTemplate(
       {
@@ -38,32 +36,30 @@ export async function POST(request) {
       },
       { force }
     );
-    const patch = { id: row.id, updated_at: now };
-    if (type === "title_too_long" && template.seoTitle) patch.seo_title = template.seoTitle;
-    if (type === "duplicate_description" && template.metaDescription) patch.meta_description = template.metaDescription;
-    // Guards the rare case where the generator decides nothing actually
-    // needs to change for this specific type despite the audit flag.
-    if (Object.keys(patch).length > 2) updates.push(patch);
-  }
-
-  const db = getSupabaseAdmin();
-  for (let i = 0; i < updates.length; i += BATCH_SIZE) {
-    const batch = updates.slice(i, i + BATCH_SIZE);
-    const { error } = await db.from("products").upsert(batch, { onConflict: "id" });
-    if (error) {
-      return NextResponse.json(
-        { error: `Applied ${i} of ${updates.length} before failing: ${error.message}`, applied: i },
-        { status: 500 }
-      );
+    if (type === "title_too_long" && template.seoTitle) {
+      patches.push({ id: row.id, seo_title: template.seoTitle });
+    }
+    if (type === "duplicate_description" && template.metaDescription) {
+      patches.push({ id: row.id, meta_description: template.metaDescription });
     }
   }
 
-  await logAdminAction(request, {
-    action: "update",
-    entityType: "product",
-    entityId: null,
-    entityLabel: `Bulk SEO template applied — ${updates.length} products (${type.replace(/_/g, " ")})`,
-  });
+  const { applied, failed } = await applyProductPatches(patches);
 
-  return NextResponse.json({ applied: updates.length, scanned: targetRows.length });
+  if (applied > 0) {
+    await logAdminAction(request, {
+      action: "update",
+      entityType: "product",
+      entityId: null,
+      entityLabel: `Bulk SEO template applied — ${applied} products (${type.replace(/_/g, " ")})`,
+    });
+  }
+
+  if (failed.length > 0) {
+    return NextResponse.json(
+      { error: `Applied ${applied}, but ${failed.length} failed: ${failed[0].error}`, applied, failed: failed.length },
+      { status: 500 }
+    );
+  }
+  return NextResponse.json({ applied, scanned: targetRows.length });
 }
