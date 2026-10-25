@@ -3,7 +3,7 @@ import { getProducts, createProduct } from "@/lib/db";
 import { saveUploadedImage } from "@/lib/upload";
 import { withResolvedProductImages, withResolvedProductImage } from "@/lib/images";
 import { logAdminAction } from "@/lib/auditLog";
-
+import { notifyIndexNow } from "@/lib/indexNow";
 function parseSpecs(raw) {
   if (!raw) return [];
   return raw
@@ -46,5 +46,6 @@ export async function POST(request) {
   });
 
   await logAdminAction(request, { action: "create", entityType: "product", entityId: product.id, entityLabel: product.name });
+  await notifyIndexNow([product.id]);
   return NextResponse.json({ product: await withResolvedProductImage(product) }, { status: 201 });
 }
