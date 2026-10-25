@@ -241,7 +241,7 @@ export default function ProductsExplorer({
                   <span key={`gap-${i}`} className="px-1 text-slate-400">…</span>
                 ) : (
                   <PageLink
-                    key={item.n}
+                    key={`${item.label}-${item.n}`}
                     n={item.n}
                     label={item.label}
                     current={item.n === page}
