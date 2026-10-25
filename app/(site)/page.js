@@ -89,10 +89,10 @@ export default async function HomePage() {
             fill
             priority
             sizes="100vw"
-            className="object-cover opacity-45"
+            className="object-cover object-right opacity-100"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-ink-950/95 via-ink-900/80 to-brand-900/60" />
-          <div className="absolute inset-0 bg-grid opacity-40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-ink-950/90 via-ink-900/45 to-brand-900/15" />
+          <div className="absolute inset-0 bg-grid opacity-15" />
         </div>
 
         <div className="container-page relative pb-24 pt-20 lg:pb-32 lg:pt-28">
